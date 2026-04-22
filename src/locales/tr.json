@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Küçült",
   "titlebar.maximize": "Büyüt",
   "titlebar.close": "Kapat",
@@ -428,6 +428,7 @@
   "dialog.media": "Medya Dosyaları",
   "error.network": "Ağ hatası: Lütfen internet bağlantınızı kontrol edin.",
   "error.auth": "Erişim reddedildi: Kısıtlı/Yaş kısıtlamalı bir içerik olabilir. Ayarlardan güncel bir Site Çerezi (cookies.txt) ekleyin.",
+  "error.authExpired": "Erişim Reddedildi. Yüklediğiniz cookies.txt dosyasının süresi dolmuş veya geçersiz olabilir. Lütfen tarayıcıdan yeni bir dosya çıkartıp Ayarlar menüsünden tekrar seçin.",
   "error.filesystem": "Dosya hatası: İndirme dizininde yazma/okuma izni yok veya disk dolu.",
   "error.dependency": "Araç hatası: Gerekli motorlar (yt-dlp, ffmpeg) bulunamadı.",
   "error.drm": "Bu site DRM koruması kullanıyor ve indirilemez.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Özel (Saniye)",
   "backend.noWritePermission": "\"{{path}}\" klasörüne yazma izni yok. Lütfen farklı bir klasör seçin.",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Geçersiz zaman formatı. Sadece rakam ve noktalama (:,.) kullanın."
+  "toast.invalidTimeFormat": "Geçersiz zaman formatı. Sadece rakam ve noktalama (:,.) kullanın.",
+  "settings.concurrentDownloads": "Eşzamanlı İndirme Limiti",
+  "settings.concurrentDesc": "Aynı anda kaç videonun indirileceğini belirler.",
+  "settings.concurrentWarning": "Uyarı: Eşzamanlı 1'den fazla video indirmek YouTube vb. platformlarda IP engellemesine (HTTP 429) yol açabilir."
 }

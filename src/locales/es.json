@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Minimizar",
   "titlebar.maximize": "Maximizar",
   "titlebar.close": "Cerrar",
@@ -428,6 +428,7 @@
   "dialog.media": "Archivos multimedia",
   "error.network": "Error de red: Comprueba tu conexión a internet.",
   "error.auth": "Acceso denegado: Usa un archivo cookies.txt en ajustes.",
+  "error.authExpired": "Acceso denegado. El archivo cookies.txt que cargaste podría estar caducado o no ser válido. Por favor, exporta uno nuevo y selecciónalo de nuevo en Configuración.",
   "error.filesystem": "Error de archivo: Sin permisos para escribir.",
   "error.dependency": "Error de dependencia: yt-dlp o ffmpeg faltantes.",
   "error.drm": "Este sitio usa protección DRM y no se puede descargar.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Pers. (Segundos)",
   "backend.noWritePermission": "Sin permisos de escritura en \"{{path}}\".",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Formato de tiempo inválido. Use solo números y puntuación (:,.)"
+  "toast.invalidTimeFormat": "Formato de tiempo inválido. Use solo números y puntuación (:,.)",
+  "settings.concurrentDownloads": "Límite de descargas simultáneas",
+  "settings.concurrentDesc": "Establece cuántos videos se descargan simultáneamente.",
+  "settings.concurrentWarning": "Advertencia: Descargar más de 1 video simultáneamente puede resultar en baneos de IP (HTTP 429) en plataformas como YouTube."
 }

@@ -482,14 +482,23 @@ function register(ipcMain, getBinPath) {
 
       let lastErrorMsg = '';
       if (errorBuffer) {
-        console.error(`[yt-dlp stderr] ${errorBuffer}`);
+        try {
+          const log = require('electron-log');
+          log.error(`[yt-dlp stderr for ${url}]:\n${errorBuffer}`);
+        } catch(e) {
+          console.error(`[yt-dlp stderr] ${errorBuffer}`);
+        }
+        
         if (errorBuffer.includes('ERROR:')) {
           const match = errorBuffer.match(/ERROR:\s*(.*)/);
           if (match && match[1]) {
             lastErrorMsg = match[1].trim();
           }
-        } else {
-          lastErrorMsg = errorBuffer.trim();
+        }
+        
+        if (!lastErrorMsg) {
+          const lines = errorBuffer.trim().split(/\r?\n/);
+          lastErrorMsg = lines[lines.length - 1] || 'Download error';
         }
       }
 

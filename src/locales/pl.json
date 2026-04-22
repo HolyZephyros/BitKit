@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Minimalizuj",
   "titlebar.maximize": "Maksymalizuj",
   "titlebar.close": "Zamknij",
@@ -428,6 +428,7 @@
   "dialog.media": "Pliki Multimedialne",
   "error.network": "Błąd sieci: Sprawdź połączenie z internetem.",
   "error.auth": "Brak dostępu: Treść z ograniczeniami wiekowymi (Dodaj plik cookies.txt).",
+  "error.authExpired": "Odmowa dostępu. Wczytany plik cookies.txt może być wygasły lub nieprawidłowy. Wyeksportuj nowy plik i wybierz go ponownie w Ustawieniach.",
   "error.filesystem": "Błąd plików: Brak uprawnień do zapisu na dysku.",
   "error.dependency": "Błąd zależności: Brak yt-dlp lub ffmpeg.",
   "error.drm": "Ta strona używa ochrony DRM i nie może zostać pobrana.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Własne (Sekundy)",
   "backend.noWritePermission": "Brak praw do zapisu w folderze \"{{path}}\". Wybierz inną lokalizację.",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Nieprawidłowy format czasu. Używaj tylko cyfr i znaków interpunkcyjnych (:,.)"
+  "toast.invalidTimeFormat": "Nieprawidłowy format czasu. Używaj tylko cyfr i znaków interpunkcyjnych (:,.)",
+  "settings.concurrentDownloads": "Limit jednoczesnych pobierań",
+  "settings.concurrentDesc": "Określa ile filmów jest pobieranych jednocześnie.",
+  "settings.concurrentWarning": "Ostrzeżenie: Pobieranie więcej niż 1 filmu jednocześnie może skutkować blokadami IP (HTTP 429) na platformach takich jak YouTube."
 }

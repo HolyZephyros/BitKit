@@ -151,6 +151,16 @@ function initSettings() {
     if (window.bitkit) await window.bitkit.settings.set(state.settings);
     await setLocale(lang);
   });
+
+  document.getElementById('settingsConcurrentDownloads')?.addEventListener('change', async (e) => {
+    const val = parseInt(e.target.value) || 1;
+    state.settings.maxConcurrentDownloads = val;
+    if (window.bitkit) await window.bitkit.settings.set(state.settings);
+    
+    if (val > 1) {
+      showToast(t('settings.concurrentWarning') || 'Uyarı: Eşzamanlı 1\'den fazla video indirmek YouTube vb. platformlarda IP engellemesine (HTTP 429) yol açabilir.', 'warning', 6000);
+    }
+  });
 }
 
 function applySettings() {
@@ -171,6 +181,11 @@ function applySettings() {
     if (langSelect) {
       langSelect.value = s.language;
     }
+  }
+
+  const concurrentSelect = document.getElementById('settingsConcurrentDownloads');
+  if (concurrentSelect) {
+    concurrentSelect.value = s.maxConcurrentDownloads || 1;
   }
 }
 

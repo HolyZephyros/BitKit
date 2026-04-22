@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Minimieren",
   "titlebar.maximize": "Maximieren",
   "titlebar.close": "Schließen",
@@ -428,6 +428,7 @@
   "dialog.media": "Medien-Dateien",
   "error.network": "Netzwerkfehler: Bitte überprüfen Sie Ihre Verbindung.",
   "error.auth": "Zugriff verweigert: Bitte laden Sie cookies.txt hoch.",
+  "error.authExpired": "Zugriff verweigert. Die geladene cookies.txt-Datei ist möglicherweise abgelaufen oder ungültig. Bitte exportieren Sie eine neue Datei und wählen Sie diese erneut in den Einstellungen aus.",
   "error.filesystem": "Dateifehler: Keine Schreibrechte.",
   "error.dependency": "Abhängigkeitsfehler: yt-dlp oder ffmpeg fehlen.",
   "error.drm": "Diese Seite verwendet DRM-Schutz und kann nicht heruntergeladen werden.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Benutzerdef. (Sekunden)",
   "backend.noWritePermission": "Keine Schreibrechte für \"{{path}}\". Bitte wählen Sie einen anderen Ordner.",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Ungültiges Zeitformat. Bitte nur Zahlen und Satzzeichen (:,.) verwenden."
+  "toast.invalidTimeFormat": "Ungültiges Zeitformat. Bitte nur Zahlen und Satzzeichen (:,.) verwenden.",
+  "settings.concurrentDownloads": "Limit für gleichzeitige Downloads",
+  "settings.concurrentDesc": "Legt fest, wie viele Videos gleichzeitig heruntergeladen werden.",
+  "settings.concurrentWarning": "Warnung: Das gleichzeitige Herunterladen von mehr als 1 Video kann zu IP-Sperren (HTTP 429) auf Plattformen wie YouTube führen."
 }

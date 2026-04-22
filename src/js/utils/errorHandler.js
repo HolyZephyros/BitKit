@@ -40,8 +40,12 @@ window.showErrorToast = function(error, context = 'General') {
   if (typeof window.showToast === 'function' && typeof window.t === 'function') {
     if (i18nKey === 'toast.updateDevMode') {
       window.showToast(window.t(i18nKey), 'warning');
+    } else if (i18nKey === 'error.auth' && window.state && window.state.settings && window.state.settings.cookiesPath) {
+      const expiredMsg = window.t('error.authExpired');
+      const fallbackMsg = 'Erişim Reddedildi. Yüklediğiniz cookies.txt dosyasının süresi dolmuş veya geçersiz olabilir. Lütfen tarayıcıdan yeni bir dosya çıkartıp Ayarlar menüsünden tekrar seçin.';
+      window.showToast(expiredMsg === 'error.authExpired' ? fallbackMsg : expiredMsg, 'error', 8000);
     } else {
-      window.showToast(window.t(i18nKey), 'error');
+      window.showToast(window.t(i18nKey), 'error', 6000);
     }
   }
   return i18nKey;

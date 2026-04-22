@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Réduire",
   "titlebar.maximize": "Agrandir",
   "titlebar.close": "Fermer",
@@ -428,6 +428,7 @@
   "dialog.media": "Fichiers multimédias",
   "error.network": "Erreur réseau : Veuillez vérifier votre connexion.",
   "error.auth": "Accès refusé : Contenu restreint. Veuillez utiliser un fichier cookies.txt.",
+  "error.authExpired": "Accès refusé. Le fichier cookies.txt que vous avez chargé est peut-être expiré ou non valide. Veuillez en exporter un nouveau et le sélectionner à nouveau dans les Paramètres.",
   "error.filesystem": "Erreur de fichier : Permission refusée.",
   "error.dependency": "Erreur de dépendance : yt-dlp ou ffmpeg manquant.",
   "error.drm": "Ce site utilise la protection DRM et ne peut pas être téléchargé.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Perso. (Secondes)",
   "backend.noWritePermission": "Aucune permission d'écriture pour \"{{path}}\".",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Format d'heure invalide. Utilisez uniquement des chiffres et de la ponctuation (:,.)"
+  "toast.invalidTimeFormat": "Format d'heure invalide. Utilisez uniquement des chiffres et de la ponctuation (:,.)",
+  "settings.concurrentDownloads": "Limite de téléchargements simultanés",
+  "settings.concurrentDesc": "Définit le nombre de vidéos téléchargées simultanément.",
+  "settings.concurrentWarning": "Avertissement : Le téléchargement simultané de plus d'une vidéo peut entraîner des blocages d'IP (HTTP 429) sur des plateformes comme YouTube."
 }

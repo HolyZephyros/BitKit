@@ -21,6 +21,7 @@
 <button class="btn btn-ghost" data-i18n="settings.changeFolder" id="btnSettingsConvertFolder">Değiştir</button>
 </div>
 </div>
+<div class="flex-row gap-xl" style="align-items:flex-start">
 <div class="input-group">
 <label class="input-label" data-i18n="settings.language">Dil</label>
 <div class="select-wrapper" style="max-width:200px">
@@ -37,6 +38,20 @@
 <option value="ja">日本語</option>
 <option value="zh">中文</option>
 </select>
+</div>
+</div>
+<div class="input-group">
+<label class="input-label" data-i18n="settings.concurrentDownloads">Eşzamanlı İndirme Limiti</label>
+<div class="select-wrapper" style="max-width:200px">
+<select class="select" id="settingsConcurrentDownloads">
+<option value="1">1 (Güvenli)</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+</select>
+</div>
+<div class="text-sm text-secondary" data-i18n="settings.concurrentDesc" style="margin-top:8px;">Aynı anda kaç videonun indirileceğini belirler.</div>
 </div>
 </div>
 </div>

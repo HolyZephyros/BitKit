@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "最小化",
   "titlebar.maximize": "最大化",
   "titlebar.close": "閉じる",
@@ -428,6 +428,7 @@
   "dialog.media": "メディアファイル",
   "error.network": "ネットワークエラー: インターネット接続を確認してください。",
   "error.auth": "アクセス拒否: コンテンツが制限されています。cookies.txtを追加してください。",
+  "error.authExpired": "アクセス拒否。読み込まれた cookies.txt ファイルは期限切れか無効である可能性があります。新しいファイルをエクスポートして、設定から再選択してください。",
   "error.filesystem": "ファイルエラー: 書き込み権限が拒否されたか、ディスクがいっぱいです。",
   "error.dependency": "依存関係エラー: yt-dlpまたはffmpegがありません。",
   "error.drm": "このサイトはDRM保護を使用しているためダウンロードできません。",
@@ -674,5 +675,8 @@
   "quick.phSplit": "カスタム (秒)",
   "backend.noWritePermission": "\"{{path}}\" への書き込み権限がありません。別のフォルダを選択してください。",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "無効な時間形式です。数字と句読点（:,.) のみを使用してください。"
+  "toast.invalidTimeFormat": "無効な時間形式です。数字と句読点（:,.) のみを使用してください。",
+  "settings.concurrentDownloads": "同時ダウンロード制限",
+  "settings.concurrentDesc": "同時にダウンロードする動画の数を設定します。",
+  "settings.concurrentWarning": "警告：同時に1つ以上の動画をダウンロードすると、YouTubeなどのプラットフォームでIPバン（HTTP 429）が発生する可能性があります。"
 }

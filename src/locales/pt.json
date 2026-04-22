@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "Minimizar",
   "titlebar.maximize": "Maximizar",
   "titlebar.close": "Fechar",
@@ -428,6 +428,7 @@
   "dialog.media": "Arquivos de Mídia",
   "error.network": "Erro de Rede: Verifique sua conexão com a internet.",
   "error.auth": "Acesso Negado: Conteúdo restrito. Envie o cookies.txt.",
+  "error.authExpired": "Acesso Negado. O arquivo cookies.txt que você carregou pode estar expirado ou inválido. Por favor, exporte um novo e selecione-o novamente em Configurações.",
   "error.filesystem": "Erro de Arquivo: Permissão negada para gravação.",
   "error.dependency": "Erro de Dependência: yt-dlp ou ffmpeg ausentes.",
   "error.drm": "Este site usa proteção DRM e não pode ser baixado.",
@@ -674,5 +675,8 @@
   "quick.phSplit": "Pers. (Segundos)",
   "backend.noWritePermission": "Sem permissão de gravação para \"{{path}}\". Escolha outra pasta.",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "Formato de tempo inválido. Use apenas números e pontuação (:,.)"
+  "toast.invalidTimeFormat": "Formato de tempo inválido. Use apenas números e pontuação (:,.)",
+  "settings.concurrentDownloads": "Limite de downloads simultâneos",
+  "settings.concurrentDesc": "Define quantos vídeos são baixados simultaneamente.",
+  "settings.concurrentWarning": "Aviso: Baixar mais de 1 vídeo simultaneamente pode resultar em banimentos de IP (HTTP 429) em plataformas como o YouTube."
 }

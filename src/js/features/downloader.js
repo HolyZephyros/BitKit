@@ -945,6 +945,32 @@ async function startDownload() {
 
   console.log('[Downloader] Starting download:', { url, options });
 
+  const maxDownloads = parseInt(state.settings.maxConcurrentDownloads) || 1;
+  if (state.downloads.size >= maxDownloads) {
+    state.pendingQueue.push({
+      url: url,
+      title: state.mediaInfo.title,
+      thumbnail: state.mediaInfo.thumbnail,
+      mode: state.downloadMode,
+      options: options
+    });
+    renderPendingQueue();
+    showToast(t('toast.addedToQueue', { title: truncate(state.mediaInfo.title, 40) }) || 'Sıraya eklendi', 'success');
+
+    state.mediaInfo = null;
+    document.getElementById('urlInput').value = '';
+    document.getElementById('urlInput').focus();
+    const preview = document.getElementById('mediaPreview');
+    preview.classList.remove('visible');
+    preview.style.display = 'none';
+    document.getElementById('downloadOptions').style.display = 'none';
+    document.getElementById('playlistPanel').style.display = 'none';
+
+    state.queueProcessingActive = true;
+    processNextInQueue();
+    return;
+  }
+
   try {
     const result = await window.bitkit.download.start(url, options);
     if (result.success) {
@@ -1325,6 +1351,12 @@ function removeFromQueue(index) {
 }
 
 function startQueuedItem(index) {
+  const maxDownloads = parseInt(state.settings.maxConcurrentDownloads) || 1;
+  if (state.downloads.size >= maxDownloads) {
+    showToast(t('toast.concurrentLimitReached') || 'Maksimum indirme limitine ulaşıldı.', 'warning');
+    return;
+  }
+
   const item = state.pendingQueue.splice(index, 1)[0];
   renderPendingQueue();
 
@@ -1392,7 +1424,7 @@ function renderPendingQueue() {
 
 function processNextInQueue() {
   if (!state.queueProcessingActive) return;
-  const maxDownloads = 3;
+  const maxDownloads = state.settings.maxConcurrentDownloads || 1;
   if (state.downloads.size >= maxDownloads || state.pendingQueue.length === 0) {
     if (state.pendingQueue.length === 0) state.queueProcessingActive = false;
     return;
@@ -1438,10 +1470,7 @@ async function downloadAllQueued() {
   state.queueProcessingActive = true;
   showToast(t('toast.downloadsStarting', { count: state.pendingQueue.length }), 'info');
 
-  const max = 3;
-  for (let i = 0; i < max; i++) {
-    processNextInQueue();
-  }
+  processNextInQueue();
 }
 
 function showPlaylistPanel(playlist) {

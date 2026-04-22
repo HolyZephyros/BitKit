@@ -1,4 +1,4 @@
-﻿{
+{
   "titlebar.minimize": "最小化",
   "titlebar.maximize": "最大化",
   "titlebar.close": "关闭",
@@ -428,6 +428,7 @@
   "dialog.media": "媒体文件",
   "error.network": "网络错误：请检查您的互联网连接。",
   "error.auth": "访问被拒：年龄限制或内容受限。请添加 cookies.txt。",
+  "error.authExpired": "访问被拒绝。您加载的 cookies.txt 文件可能已过期或无效。请导出新文件并在设置中重新选择它。",
   "error.filesystem": "文件错误：权限被拒绝或磁盘已满。",
   "error.dependency": "依赖错误：缺少 yt-dlp 或 ffmpeg 引擎。",
   "error.drm": "该网站使用DRM保护，无法下载。",
@@ -674,5 +675,8 @@
   "quick.phSplit": "自定义 (秒)",
   "backend.noWritePermission": "没有对 \"{{path}}\" 的写入权限。请选择另一个文件夹。",
   "quick.fmtOpus": "Opus (128kbps)",
-  "toast.invalidTimeFormat": "无效的时间格式。请仅使用数字和标点符号 (:,.)"
+  "toast.invalidTimeFormat": "无效的时间格式。请仅使用数字和标点符号 (:,.)",
+  "settings.concurrentDownloads": "并发下载限制",
+  "settings.concurrentDesc": "设置同时下载多少个视频。",
+  "settings.concurrentWarning": "警告：同时下载超过1个视频可能会导致在YouTube等平台上被封禁IP（HTTP 429）。"
 }
