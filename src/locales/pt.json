@@ -1,4 +1,4 @@
-{
+﻿{
   "titlebar.minimize": "Minimizar",
   "titlebar.maximize": "Maximizar",
   "titlebar.close": "Fechar",
@@ -430,7 +430,7 @@
   "error.auth": "Acesso Negado: Conteúdo restrito. Envie o cookies.txt.",
   "error.filesystem": "Erro de Arquivo: Permissão negada para gravação.",
   "error.dependency": "Erro de Dependência: yt-dlp ou ffmpeg ausentes.",
-    "error.drm": "Este site usa prote��o DRM e n�o pode ser baixado.",
+    "error.drm": "Este site usa proteção DRM e não pode ser baixado.",
 "error.generic": "Ocorreu um erro inesperado.",
   "toast.minRateLimit": "O limite foi ajustado para 100 KB/s para evitar problemas.",
   "dl.downloadSelected": "Baixar Selecionados",

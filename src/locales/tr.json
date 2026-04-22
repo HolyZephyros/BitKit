@@ -1,4 +1,4 @@
-{
+﻿{
   "titlebar.minimize": "Küçült",
   "titlebar.maximize": "Büyüt",
   "titlebar.close": "Kapat",
@@ -430,7 +430,7 @@
   "error.auth": "Erişim reddedildi: Kısıtlı/Yaş kısıtlamalı bir içerik olabilir. Ayarlardan güncel bir Site Çerezi (cookies.txt) ekleyin.",
   "error.filesystem": "Dosya hatası: İndirme dizininde yazma/okuma izni yok veya disk dolu.",
   "error.dependency": "Araç hatası: Gerekli motorlar (yt-dlp, ffmpeg) bulunamadı.",
-    "error.drm": "Bu site DRM korumas� kullan�yor ve indirilemez.",
+    "error.drm": "Bu site DRM koruması kullanıyor ve indirilemez.",
 "error.generic": "Beklenmeyen bir hata oluştu. Daha fazla detay için loglara (bitkit-error.log) bakın.",
   "toast.minRateLimit": "Ağ kopmasını önlemek için limit otomatik olarak 100 KB/s'ye çekildi.",
   "dl.downloadSelected": "Seçileni İndir",

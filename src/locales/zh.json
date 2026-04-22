@@ -1,4 +1,4 @@
-{
+﻿{
   "titlebar.minimize": "最小化",
   "titlebar.maximize": "最大化",
   "titlebar.close": "关闭",
@@ -430,7 +430,7 @@
   "error.auth": "访问被拒：年龄限制或内容受限。请添加 cookies.txt。",
   "error.filesystem": "文件错误：权限被拒绝或磁盘已满。",
   "error.dependency": "依赖错误：缺少 yt-dlp 或 ffmpeg 引擎。",
-    "error.drm": "?????DRM??,?????",
+    "error.drm": "该网站使用DRM保护，无法下载。",
 "error.generic": "发生意外错误。请检查日志了解详情。",
   "toast.minRateLimit": "为防止连接问题，速度限制已自动锁定在 100 KB/s。",
   "dl.downloadSelected": "下载选中项",

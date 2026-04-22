@@ -1,4 +1,4 @@
-{
+﻿{
   "titlebar.minimize": "Riduci a icona",
   "titlebar.maximize": "Ingrandisci",
   "titlebar.close": "Chiudi",
@@ -430,7 +430,7 @@
   "error.auth": "Accesso negato: Usa un file cookies.txt nelle impostazioni.",
   "error.filesystem": "Errore file: Permesso negato per scrivere.",
   "error.dependency": "Errore dipendenze: yt-dlp o ffmpeg mancanti.",
-    "error.drm": "Questo sito utilizza la protezione DRM e non pu� essere scaricato.",
+    "error.drm": "Questo sito utilizza la protezione DRM e non può essere scaricato.",
 "error.generic": "Si è verificato un errore imprevisto.",
   "toast.minRateLimit": "Il limite è stato bloccato a 100 KB/s per evitare problemi.",
   "dl.downloadSelected": "Scarica Selezionati",

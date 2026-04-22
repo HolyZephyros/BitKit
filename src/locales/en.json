@@ -1,4 +1,4 @@
-{
+﻿{
   "titlebar.minimize": "Minimize",
   "titlebar.maximize": "Maximize",
   "titlebar.close": "Close",
@@ -430,7 +430,7 @@
   "error.auth": "Access denied: Age-restricted or restricted content. Please add or update your Site Cookies (cookies.txt) in settings.",
   "error.filesystem": "File error: Permission denied to write to the download directory or disk is full.",
   "error.dependency": "Dependency error: Required engines (yt-dlp, ffmpeg) are missing.",
-    "error.drm": "This site uses DRM protection and cannot be downloaded.",
+  "error.drm": "This site uses DRM protection and cannot be downloaded.",
 "error.generic": "An unexpected error occurred. Check logs (bitkit-error.log) for more details.",
   "toast.minRateLimit": "To prevent connectivity issues, the limit was automatically locked to 100 KB/s.",
   "dl.downloadSelected": "Download Selected",
