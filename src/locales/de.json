@@ -431,7 +431,7 @@
   "error.filesystem": "Dateifehler: Keine Schreibrechte.",
   "error.dependency": "Abhängigkeitsfehler: yt-dlp oder ffmpeg fehlen.",
   "error.drm": "Diese Seite verwendet DRM-Schutz und kann nicht heruntergeladen werden.",
-"error.generic": "Ein unerwarteter Fehler ist aufgetreten.",
+  "error.generic": "Ein unerwarteter Fehler ist aufgetreten.",
   "toast.minRateLimit": "Das Limit wurde auf 100 KB/s gesetzt, um Probleme zu vermeiden.",
   "dl.downloadSelected": "Ausgewählte Herunterladen",
   "error.unknownDownload": "Unbekannter Download-Fehler",
