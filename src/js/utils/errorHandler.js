@@ -20,11 +20,15 @@ window.handleError = function(error, context = 'General') {
   if (msgStr.includes('eperm') || msgStr.includes('eacces') || msgStr.includes('enoent') || msgStr.includes('permission denied') || msgStr.includes('enospc')) {
     return 'error.filesystem';
   }
-  if (msgStr.includes('ffmpeg is not installed') || msgStr.includes('ffprobe') || msgStr.includes('yt-dlp.exe') || msgStr.includes('not found')) {
+  if (msgStr.includes('ffmpeg is not installed') || msgStr.includes('ffprobe is not installed') || msgStr.includes('yt-dlp.exe not found') || msgStr.includes('spawn enoent') || msgStr.includes('binary not found')) {
     return 'error.dependency';
   }
   if (msgStr.includes('not packed') || msgStr.includes('dev update config')) {
     return 'toast.updateDevMode';
+  }
+
+  if (msgStr.includes('drm') || msgStr.includes('widevine') || msgStr.includes('playready') || msgStr.includes('fairplay') || msgStr.includes('drm protection')) {
+    return 'error.drm';
   }
 
   return 'error.generic';
