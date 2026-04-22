@@ -1,0 +1,287 @@
+<!-- --- Downloader Page --- -->
+<div class="page active" id="page-downloader">
+<!-- URL Input (Drag & Drop enabled) -->
+<div class="download-url-section" id="urlDropZone">
+<div class="drop-overlay" id="dropOverlay">
+<span data-i18n="dl.dropUrlHint">📎 URL'yi buraya bırak</span>
+</div>
+<div class="url-input-row">
+<div class="input-with-icon" style="flex:1">
+<svg class="input-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+<input class="input input-big" data-i18n-ph="dl.urlPlaceholder" id="urlInput" placeholder="Video veya ses URL'si yapıştır..." spellcheck="false" type="text"/>
+</div>
+<button class="btn btn-secondary btn-lg" data-i18n-tip="dl.clearUrl" id="btnClearUrl" style="background: var(--accent-bordo); color: #fff; display: none; padding: 12px 16px;" title="Temizle">
+<svg fill="none" height="28" stroke="currentColor" stroke-width="2.5" viewbox="4 4 16 16" width="28"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+</button>
+<button class="btn btn-lg btn-batch-toggle" id="btnToggleBatchMode" title="Toplu Link Modu">
+<svg fill="none" height="28" stroke="currentColor" stroke-width="2.5" viewbox="1 3 22 22" width="28"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+</button>
+<button class="btn btn-secondary btn-lg" id="btnAnalyze">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<span data-i18n="dl.analyze">Analiz Et</span>
+</button>
+</div>
+<!-- Batch Link List (Hidden by default) -->
+<div id="batchLinkList" class="flex-row gap-sm" style="display:none; flex-wrap:wrap; margin-top:var(--space-sm);"></div>
+</div>
+<!-- Loading State -->
+<div id="analyzeLoading" style="display:none">
+<div class="card" style="padding: var(--space-xl); text-align: center;">
+<div class="spin" style="width:32px;height:32px;border:3px solid var(--glass-border);border-top-color:var(--accent-teal);border-radius:50%;margin:0 auto var(--space-md)"></div>
+<p class="text-secondary" data-i18n="dl.analyzing">URL analiz ediliyor...</p>
+</div>
+</div>
+<!-- Media Preview -->
+<div class="media-preview" id="mediaPreview">
+<img alt="" class="media-thumbnail" id="mediaThumbnail" src=""/>
+<div class="media-info">
+<div class="media-title" id="mediaTitle"></div>
+<div class="media-meta">
+<span class="media-platform" id="mediaPlatform"></span>
+<span id="mediaDuration"></span>
+<span id="mediaUploader"></span>
+</div>
+<div class="flex-row gap-sm mt-sm">
+<span class="tag tag-neutral font-mono" id="mediaFormatCount"></span>
+</div>
+</div>
+</div>
+<!-- Playlist Browser Panel -->
+<div class="playlist-panel open" id="playlistPanel" style="display:none">
+<div class="playlist-panel-header" onclick="document.getElementById('playlistPanel').classList.toggle('open')" style="cursor: pointer; user-select: none;">
+<div class="playlist-panel-title-row">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8M12 17v4"></path></svg>
+<h3 class="playlist-panel-title" data-i18n="dl.playlist" id="playlistPanelTitle">Playlist</h3>
+<span class="playlist-count-badge" id="playlistCountBadge">0 video</span>
+<svg class="playlist-accordion-arrow" fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M6 9l6 6 6-6"></path></svg>
+</div>
+<div class="playlist-panel-controls" onclick="event.stopPropagation()" style="cursor: default;">
+<div class="playlist-search-wrapper">
+<svg class="playlist-search-icon" fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<input class="input playlist-search" data-i18n-ph="dl.searchVideo" id="playlistSearch" placeholder="Video ara..." type="text"/>
+</div>
+<div class="playlist-select-controls">
+<button class="btn btn-ghost btn-sm" id="playlistSelectAll">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><rect height="18" rx="2" width="18" x="3" y="3"></rect><path d="M9 12l2 2 4-4"></path></svg>
+<span data-i18n="dl.selectAll">Tümünü Seç</span>
+</button>
+<button class="btn btn-ghost btn-sm" id="playlistSelectNone">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><rect height="18" rx="2" width="18" x="3" y="3"></rect></svg>
+<span data-i18n="dl.deselectAll">Seçimi Kaldır</span>
+</button>
+</div>
+</div>
+</div>
+<div class="playlist-video-list" id="playlistVideoList"></div>
+</div>
+<!-- Download Options (shown after analyze) -->
+<div id="downloadOptions" style="display:none">
+<!-- Settings Wrapper Card -->
+<div class="card" style="margin-bottom:var(--space-md)">
+<!-- Mode Toggle: Video / Audio -->
+<div class="mode-toggle" id="modeToggle" style="margin-bottom:var(--space-lg)">
+<button class="mode-btn active" data-mode="video" id="modeVideo">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><rect height="14" rx="2" width="20" x="2" y="3"></rect><path d="M8 21h8M12 17v4"></path></svg>
+<span data-i18n="dl.modeVideo">Video</span>
+</button>
+<button class="mode-btn" data-mode="audio" id="modeAudio">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+<span data-i18n="dl.modeAudio">Ses</span>
+</button>
+</div>
+<!-- Video Settings -->
+<div id="videoSettings">
+<!-- Video Quality Accordion -->
+<div class="format-accordion">
+<button class="format-accordion-header" onclick="this.parentElement.classList.toggle('open')">
+<span data-i18n="dl.quality">Kalite</span>
+<span class="format-accordion-value" data-i18n="dl.autoBest" id="videoFormatValue">⚡ Otomatik (En İyi)</span>
+<svg class="format-accordion-arrow" fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<div class="format-accordion-body">
+<div class="format-list" id="videoFormatList">
+<div class="format-item selected" data-format-id="best-video">
+<span class="format-radio"></span>
+<span class="format-label" data-i18n="dl.autoBest">⚡ Otomatik (En İyi)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Audio Settings -->
+<div id="audioSettings" style="display:none">
+<!-- Audio Quality Accordion -->
+<div class="format-accordion">
+<button class="format-accordion-header" onclick="this.parentElement.classList.toggle('open')">
+<span data-i18n="dl.quality">Kalite</span>
+<span class="format-accordion-value" data-i18n="dl.autoBest" id="audioOnlyFormatValue">⚡ Otomatik (En İyi)</span>
+<svg class="format-accordion-arrow" fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+<div class="format-accordion-body">
+<div class="format-list" id="audioOnlyFormatList">
+<div class="format-item selected" data-format-id="best-audio">
+<span class="format-radio"></span>
+<span class="format-label" data-i18n="dl.autoBest">⚡ Otomatik (En İyi)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Advanced Settings Toggles -->
+<div style="border-top: 1px solid var(--glass-border); margin-top: var(--space-lg); padding-top: var(--space-md);">
+<!-- Advanced Settings Toggles -->
+<div class="flex-row gap-lg" style="flex-wrap:wrap">
+<label class="toggle" id="toggleThumbnail">
+<div class="toggle-track"><div class="toggle-thumb"></div></div>
+<span class="toggle-label" data-i18n="dl.toggleThumbnail">Thumbnail Göm</span>
+</label>
+<label class="toggle active" id="toggleMetadata">
+<div class="toggle-track"><div class="toggle-thumb"></div></div>
+<span class="toggle-label" data-i18n="dl.toggleMetadata">Metadata Göm</span>
+</label>
+<label class="toggle" id="toggleOpenFolder">
+<div class="toggle-track"><div class="toggle-thumb"></div></div>
+<span class="toggle-label" data-i18n="dl.toggleOpenFolder">İndirince Klasörü Aç</span>
+</label>
+<label class="toggle" id="toggleShutdown">
+<div class="toggle-track"><div class="toggle-thumb"></div></div>
+<span class="toggle-label" data-i18n="dl.toggleShutdown">Bitince PC Kapat</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Advanced Toggle -->
+<button class="advanced-toggle" id="advancedToggle">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6,9 12,15 18,9"></polyline></svg>
+<span data-i18n="dl.advancedSettings">Gelişmiş Ayarlar</span>
+</button>
+<div class="advanced-settings" id="advancedSettings">
+<!-- Time Range Section -->
+<div class="advanced-section">
+<div class="advanced-section-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+<span data-i18n="dl.timeRange">Zaman Aralığı</span>
+</div>
+<div class="advanced-section-grid">
+<div class="input-group">
+<label class="input-label" data-i18n="dl.startTime">Başlangıç</label>
+<input class="input font-mono" id="startTime" placeholder="00:00:00" type="text"/>
+</div>
+<div class="input-group">
+<label class="input-label" data-i18n="dl.endTime">Bitiş</label>
+<input class="input font-mono" id="endTime" placeholder="00:00:00" type="text"/>
+</div>
+</div>
+</div>
+<!-- Limits Section -->
+<div class="advanced-section">
+<div class="advanced-section-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+<span data-i18n="dl.limits">Limitler</span>
+</div>
+<div class="input-group mb-md">
+<label class="input-label" data-i18n="dl.rateLimit">Hız Limiti (KB/s)</label>
+<div class="mode-toggle" id="optRateLimitTabs">
+<button class="mode-btn active" data-i18n="dl.unlimited" data-val="" type="button">Sınırsız</button>
+<button class="mode-btn" data-val="1024" type="button">1 MB/s</button>
+<button class="mode-btn" data-val="2048" type="button">2 MB/s</button>
+<button class="mode-btn" data-val="5120" type="button">5 MB/s</button>
+<button class="mode-btn" data-val="custom" data-i18n="dl.custom" type="button">Custom</button>
+</div>
+<div class="mt-sm" id="customRateInputBlock" style="display:none;">
+<div style="position:relative; display:inline-flex; align-items:center;">
+<input class="input font-mono" data-i18n-ph="opt.customvalue" id="rateLimit" placeholder="1024" style="padding-right: 48px; min-width: 100px; max-width: 160px; width: 100px; transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);" type="number"/>
+<span style="position:absolute; right:14px; font-size:12px; color:var(--text-muted); pointer-events:none;">KB/s</span>
+</div>
+</div>
+</div>
+<div class="input-group">
+<label class="input-label" data-i18n="dl.maxFilesize">Maks. Boyut (MB)</label>
+<input class="input" data-i18n-ph="dl.unlimited" id="maxFilesize" placeholder="Sınırsız" type="number"/>
+</div>
+</div>
+<!-- Cookies Section -->
+<div class="advanced-section">
+<div class="advanced-section-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path><circle cx="8" cy="14" r="1"></circle><circle cx="12" cy="18" r="1"></circle><circle cx="16" cy="12" r="1"></circle></svg>
+<span data-i18n="dl.cookiesFile">Cookies Dosyası</span>
+</div>
+<div class="flex-row gap-sm">
+<input class="input" id="cookiesPath" placeholder="cookies.txt" readonly="" style="flex:1" type="text"/>
+<button class="btn btn-ghost" data-i18n="dl.selectFolder" id="btnSelectCookies">Seç</button>
+</div>
+</div>
+<!-- Filename Template Section -->
+<div class="advanced-section">
+<div class="advanced-section-header">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14,2 14,8 20,8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line></svg>
+<span data-i18n="dl.filenameTpl">Dosya Adı Şablonu</span>
+</div>
+<div class="select-wrapper">
+<select class="select" id="filenameTemplate">
+<option data-i18n="dl.tplOptTitle" selected="" value="%(title)s.%(ext)s">Sadece Video Adı</option>
+<option data-i18n="dl.tplOptStandard" value="%(uploader)s - %(title)s.%(ext)s">Kanal Adı - Video Adı</option>
+<option data-i18n="dl.tplOptRes" value="%(title)s [%(resolution)s].%(ext)s">Video Adı [Çözünürlük]</option>
+<option data-i18n="dl.tplOptFull" value="%(uploader)s - %(title)s [%(resolution)s].%(ext)s">Kanal Adı - Video Adı [Çözünürlük]</option>
+<option data-i18n="dl.tplOptId" value="%(title)s [%(id)s].%(ext)s">Video Adı [Benzersiz Link ID]</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Download Buttons -->
+<div class="download-actions mt-lg" id="downloadActions">
+<button class="btn btn-primary btn-lg" id="btnDownload">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+<span data-i18n="dl.download" id="btnDownloadText">Video İndir</span>
+</button>
+<button class="btn btn-outline btn-lg" id="btnAddToQueue">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M12 5v14M5 12h14"></path></svg>
+<span data-i18n="dl.addToQueue" id="btnAddToQueueText">Sıraya Ekle</span>
+</button>
+</div>
+</div>
+<!-- Pending Queue -->
+<div class="card" id="pendingQueue" onclick="if(event.target.closest('#pendingQueueList')) return; const list = document.getElementById('pendingQueueList'); const q = document.getElementById('pendingQueue'); const svg = this.querySelector('svg'); const header = document.querySelector('#pendingQueue &gt; .flex-between'); if(list.style.display === 'none') { list.style.display = ''; svg.style.transform = 'rotate(180deg)'; header.style.marginBottom = ''; q.style.paddingBottom = ''; } else { list.style.display = 'none'; svg.style.transform = 'rotate(0deg)'; header.style.marginBottom = '0'; q.style.paddingBottom = window.getComputedStyle(q).paddingTop; }" style="display:none; margin-top:var(--space-md); cursor:pointer; user-select:none;">
+<div class="flex-between mb-md">
+<div style="display:flex; align-items:center; gap:8px;">
+<div style="display:flex; align-items:center;">
+<h3 class="card-title" data-i18n="dl.queue" style="margin:0;">İndirme Sırası</h3>
+<span id="pendingQueueCount" style="margin-left:6px; font-weight:700; color:var(--text-secondary);"> </span>
+</div>
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" style="transition: transform 0.2s ease; transform: rotate(180deg); color: var(--text-muted);" viewbox="0 0 24 24" width="18"><path d="M6 9l6 6 6-6"></path></svg>
+</div>
+<div class="flex-row gap-sm" onclick="event.stopPropagation()" style="align-items: stretch;">
+<button class="btn btn-secondary btn-sm" id="btnClearQueue" style="background:var(--accent-bordo); color:#fff;">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><polyline points="3,6 5,6 21,6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+<span data-i18n="dl.clearQueue">Temizle</span>
+</button>
+<button class="btn btn-secondary btn-sm" id="btnDownloadAll">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+<span data-i18n="dl.downloadAll">Tümünü İndir</span>
+</button>
+</div>
+</div>
+<div class="flex-col gap-sm" id="pendingQueueList" onclick="event.stopPropagation()" style="cursor:default; user-select:text;"></div>
+</div>
+<!-- Active Downloads -->
+<div class="download-queue" id="downloadQueue" style="display:none">
+<div class="download-queue-header">
+<div class="download-queue-title" data-i18n="dl.activeDownloads">Aktif İndirmeler</div>
+<div class="flex-row gap-sm" id="activeRateContainer" style="align-items: center;">
+<div class="tabs" id="activeRateLimitTabs">
+<button class="tab active" data-i18n="dl.unlimited" data-val="" type="button">Sınırsız</button>
+<button class="tab" data-val="1024" type="button">1 MB/s</button>
+<button class="tab" data-val="2048" type="button">2 MB/s</button>
+<button class="tab" data-val="5120" type="button">5 MB/s</button>
+<button class="tab" data-val="custom" type="button">Özel</button>
+</div>
+<div id="activeRateInputBlock" style="position:relative; display:none; align-items:center;">
+<input autocomplete="off" class="input input-sm font-mono" data-i18n-placeholder="opt.customvalue" id="globalRateLimit" placeholder="1024" style="padding: 6px 42px 6px 12px; min-width: 90px; max-width: 150px; width: 90px; transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);" type="number"/>
+<span style="position:absolute; right:12px; font-size:11px; color:var(--text-muted); pointer-events:none;">KB/s</span>
+</div>
+<button class="btn btn-primary" data-i18n="dl.cancelAll" id="btnCancelAllActive" style="display:none; padding: 9px 18px; border-radius: var(--radius-md); font-weight: 600; background:var(--accent-bordo); border:none; color:#fff;">Tümünü İptal Et</button>
+</div>
+</div>
+<div id="downloadQueueList"></div>
+</div>
+</div>

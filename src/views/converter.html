@@ -1,0 +1,420 @@
+<!-- --- Converter Page --- -->
+<div class="page" id="page-converter">
+<!-- Drop Zone -->
+<div class="drop-zone" id="dropZone">
+<svg class="drop-zone-icon" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" style="pointer-events: none;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17,8 12,3 7,8"></polyline><line x1="12" x2="12" y1="3" y2="15"></line></svg>
+<div class="drop-zone-title" data-i18n="conv.dropTitle" style="pointer-events: none;">Dosyaları buraya sürükle</div>
+<div class="drop-zone-hint" data-i18n="conv.dropHint" style="pointer-events: none;">veya tıklayarak seç • Video &amp; Ses dosyaları</div>
+</div>
+
+<!-- File List Accordion -->
+<div class="file-list-accordion open" id="fileListAccordion" style="display:none;">
+  <div class="file-list-header" id="fileListHeader">
+    <svg fill="none" height="22" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14,2 14,8 20,8"></polyline></svg>
+    <div class="file-list-title">
+      <span data-i18n="conv.filesLoaded">Yüklenen Dosyalar</span>
+      <span class="file-list-count" id="fileListCount">0</span>
+    </div>
+    <button class="btn" id="btnClearConvertFiles" style="background:var(--accent-bordo); border-color:var(--accent-bordo); color:#fff; margin-right: 12px;">
+      <svg fill="none" height="16" stroke="#ffffff" stroke-width="2" style="color: #ffffff;" viewbox="0 0 24 24" width="16"><polyline points="3,6 5,6 21,6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2v2"></path></svg>
+      <span data-i18n="dl.clearQueue">Temizle</span>
+    </button>
+    <svg class="chevron" id="fileListChevron" fill="none" height="16" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24" width="16"><polyline points="6 9 12 15 18 9"></polyline></svg>
+  </div>
+  <div class="file-list-body" id="fileListBody">
+    <div class="file-list-wrapper">
+      <div class="file-list" id="fileList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Converter Settings Panel (Hidden until files dropped) -->
+<div id="convSettingsPanel" style="display:none; margin-top:var(--space-md);">
+  <!-- Tabs -->
+  <div class="tabs mb-md" id="convTabs" style="display:flex; background:rgba(0,0,0,0.2); padding: 5px; border-radius: var(--radius-lg);">
+    <button class="tab active" data-target="tabQuickTemplates" data-i18n="conv.tabTemplates" style="flex:1; font-weight:700; letter-spacing: 0.5px; font-size:var(--text-md); padding:14px; border-radius: var(--radius-md);">HIZLI ŞABLONLAR</button>
+    <button class="tab" data-target="tabProSettings" data-i18n="conv.tabPro" style="flex:1; font-weight:700; letter-spacing: 0.5px; font-size:var(--text-md); padding:14px; border-radius: var(--radius-md);">STÜDYO MODU</button>
+  </div>
+
+  <div id="tabProSettings" style="display:none;">
+    
+    <!-- İŞLEM MODU SEÇİCİ (Global Operation Mode) -->
+    <div class="op-mode-container" style="margin-bottom: 1.5rem;">
+
+      <div class="op-mode-selector" id="convOperationMode">
+        <button class="op-mode-btn active" data-mode="video_audio" data-i18n="conv.opVideoAudio">🎬 Video + Ses</button>
+        <button class="op-mode-btn" data-mode="video_only" data-i18n="conv.opVideoOnly">🎥 Sadece Video</button>
+        <button class="op-mode-btn" data-mode="audio_only" data-i18n="conv.opAudioOnly">🎵 Sadece Ses</button>
+      </div>
+    </div>
+
+    <!-- VIDEO ENGINE PANEL -->
+    <div id="macroVideoPanel" style="padding: 1.25rem; background: rgba(0,0,0,0.15); border-radius: var(--radius-lg); margin-bottom: 1.5rem; border-left: 4px solid var(--accent-teal); transition: all 0.3s ease;">
+      <div class="flex-between" style="margin-bottom: 1.25rem;" id="toggleVideoEngineAccordion">
+        <div>
+          <h4 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-teal); font-weight: 800; display: flex; align-items: center; gap: 8px; margin:0">
+            <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18"><rect height="20" rx="2.18" ry="2.18" width="20" x="2" y="2"></rect><line x1="7" x2="7" y1="2" y2="22"></line><line x1="17" x2="17" y1="2" y2="22"></line><line x1="2" x2="22" y1="12" y2="12"></line><line x1="2" x2="7" y1="7" y2="7"></line><line x1="2" x2="7" y1="17" y2="17"></line><line x1="17" x2="22" y1="17" y2="17"></line><line x1="17" x2="22" y1="7" y2="7"></line></svg>
+            <span data-i18n="conv.macroVideo">VİDEO MOTORU</span>
+          </h4>
+        </div>
+      </div>
+
+      <div id="videoEngineBody" style="display:block; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08);">
+        <!-- Row 1: Format, Codec, Çözünürlük, FPS -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem; margin-bottom:1.25rem;">
+          
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.targetFormat" style="font-weight: 700;">Hedef Format</label>
+            <div class="select-wrapper">
+              <select class="select" id="convVideoFormat" style="background: var(--bg-input);">
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.videoCodec" style="font-weight: 700;">Video Codec</label>
+            <div class="select-wrapper">
+              <select class="select" id="convVideoCodec" style="background: var(--bg-input);"></select>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.resolution" style="font-weight: 700;">Çözünürlük</label>
+            <div class="select-wrapper">
+              <select class="select" id="convResolution" style="background: var(--bg-input);">
+                <option value="original" data-i18n="conv.resOriginal">Orijinal (Değiştirme)</option>
+                <option value="7680x4320">8K (7680×4320)</option>
+                <option value="3840x2160">4K (3840×2160)</option>
+                <option value="2560x1440">2K (2560×1440)</option>
+                <option value="1920x1080">1080p (Full HD)</option>
+                <option value="1280x720">720p (HD)</option>
+                <option value="854x480">480p (SD)</option>
+                <option value="640x360">360p</option>
+                <option value="custom" data-i18n="conv.resCustom">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convResolutionCustom" style="display:none; margin-top:8px;">
+              <div style="display:flex; gap:6px; align-items:center;">
+                <input type="number" id="convResW" class="input font-mono" placeholder="1920" min="16" max="15360" title="Min: 16, Max: 15360" style="width:100%; text-align:center;">
+                <span style="color:var(--text-muted); font-weight:700;">×</span>
+                <input type="number" id="convResH" class="input font-mono" placeholder="1080" min="16" max="8640" title="Min: 16, Max: 8640" style="width:100%; text-align:center;">
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.fps" style="font-weight: 700;">Kare Hızı (FPS)</label>
+            <div class="select-wrapper">
+              <select class="select" id="convFps" style="background: var(--bg-input);">
+                <option value="original" data-i18n="conv.fpsOriginal">Orijinal</option>
+                <option value="120">120 FPS</option>
+                <option value="60">60 FPS</option>
+                <option value="30">30 FPS</option>
+                <option value="24">24 FPS (Sinema)</option>
+                <option value="15">15 FPS</option>
+                <option value="custom" data-i18n="conv.fpsCustom">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convFpsCustom" style="display:none; margin-top:8px;">
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="number" id="convFpsInput" class="input font-mono" placeholder="25" min="1" max="10000" title="1-10000 FPS" style="width:100%; padding-right:32px;">
+                <span style="position:absolute; right:10px; font-size:11px; color:var(--text-muted); pointer-events:none;">fps</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: HW Accel, Preset, Kalite Modu, 2-Pass -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:1.25rem;">
+          
+          <div class="input-group" id="hwAccelGroup" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.hwAccel" style="font-weight: 700;">Donanım Hızlandırma</label>
+            <div class="select-wrapper">
+              <select class="select" id="convHwAccel" style="background: var(--bg-input);">
+                <option value="none" data-i18n="conv.hwNone">Yok (Sadece CPU)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.preset" style="font-weight: 700;">Sıkıştırma Yoğunluğu</label>
+            <div class="select-wrapper">
+              <select class="select" id="convPreset" style="background: var(--bg-input);">
+                <option value="ultrafast" data-i18n="conv.presetUltrafast">Çok Hızlı (ultrafast)</option>
+                <option value="fast" data-i18n="conv.presetFast">Hızlı (fast)</option>
+                <option value="medium" selected data-i18n="conv.presetMedium">Dengeli (medium)</option>
+                <option value="slow" data-i18n="conv.presetSlow">Yavaş (slow)</option>
+                <option value="veryslow" data-i18n="conv.presetVeryslow">Maks. Sıkıştırma (veryslow)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.qualityMode" style="font-weight: 700; margin-bottom: 6px;">Kalite Modu</label>
+            <div class="tabs" id="convQualityTabs" style="display:flex;">
+              <button class="tab active" data-val="crf" data-i18n="conv.qualityModeCrf" style="flex:1;">Akıllı Kalite (CRF)</button>
+              <button class="tab" data-val="bitrate" data-i18n="conv.qualityModeBitrate" style="flex:1;">Hedef Bitrate</button>
+            </div>
+            
+            <div id="convQualityCrfBox" style="margin-top: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: var(--radius-md);">
+              <div class="flex-between mb-xs">
+                <span class="text-sm text-secondary" id="convCrfLabel" data-i18n="conv.advQualityCQ">Kalite Değeri (CRF)</span>
+                <span class="font-mono" id="convCrfValDisplay" style="color:var(--accent-teal); font-weight:800; font-size: 1rem;">14</span>
+              </div>
+              <input type="range" id="convCrfSlider" min="0" max="51" value="14" class="slider" style="width:100%;">
+              <div class="flex-between" style="margin-top:6px;">
+                <span style="font-size:12px; color:var(--accent-teal); font-weight:700; letter-spacing: 0.5px;" data-i18n="conv.highQuality">← Yüksek Kalite</span>
+                <span style="font-size:12px; color:var(--accent-bordo); font-weight:700; letter-spacing: 0.5px;" data-i18n="conv.lowQuality">Düşük Kalite →</span>
+              </div>
+            </div>
+
+            <div id="convQualityBitrateBox" style="display:none; margin-top: 12px;">
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="number" id="convVBitrateInput" class="input font-mono" placeholder="5000" style="padding-right:42px;">
+                <span style="position:absolute; right:12px; font-size:11px; color:var(--text-muted); pointer-events:none;">kbps</span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.twoPass" style="font-weight: 700;">İki Aşamalı Kodlama</label>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:6px;">
+              <div class="toggle" id="convTwoPassToggle">
+                <div class="toggle-track">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+              <span class="text-sm text-secondary" id="convTwoPassLabel" data-i18n="conv.twoPassOff">Kapalı</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video Filters Section -->
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.05);">
+          <h5 style="margin-bottom: 1rem; color: var(--accent-teal); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">✨ GELİŞMİŞ VİDEO FİLTRELERİ</h5>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem; align-items:start;">
+            
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="deshake">
+              <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterDeshake">Sarsıntı Giderici</span>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="deinterlace">
+              <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterDeinterlace">Taraklanma Giderici</span>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="minterpolate" data-i18n-tip="conv.tipMinterpolate" title="Aşırı yavaş işlem yapar (Sadece güçlü CPU'lar)">
+              <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterMinterpolate">Akıcı 60 FPS (Yavaş)</span>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="hdr2sdr">
+              <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterHDR">HDR -> SDR</span>
+            </div>
+
+            <div class="filter-item-wrapper" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="deblock" data-i18n-tip="conv.tipDeblock" title="Yüksek çözünürlüklerde aşırı RAM tüketir">
+                <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+                <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterDeblock">Mozaik Giderici</span>
+              </div>
+              <div class="filter-slider" id="slider-deblock" style="display:none; padding-left:52px; padding-right:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11.5px; letter-spacing:0.3px; color:var(--text-muted); font-weight:800;">
+                  <span>Hafif</span><span class="slider-val-text" style="color:var(--accent-teal);">Önerilen</span><span>Güçlü</span>
+                </div>
+                <input type="range" class="slider filter-range" data-target="deblock" min="1" max="100" value="50">
+              </div>
+            </div>
+
+            <div class="filter-item-wrapper" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="denoise">
+                <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+                <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterDenoise">Kumlama Silici</span>
+              </div>
+              <div class="filter-slider" id="slider-denoise" style="display:none; padding-left:52px; padding-right:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11.5px; letter-spacing:0.3px; color:var(--text-muted); font-weight:800;">
+                  <span>Hafif</span><span class="slider-val-text" style="color:var(--accent-teal);">Önerilen</span><span>Güçlü</span>
+                </div>
+                <input type="range" class="slider filter-range" data-target="denoise" min="1" max="100" value="50">
+              </div>
+            </div>
+
+            <div class="filter-item-wrapper" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="sharpen">
+                <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+                <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterSharpen">Bulanıklık Keskinleştirici</span>
+              </div>
+              <div class="filter-slider" id="slider-sharpen" style="display:none; padding-left:52px; padding-right:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11.5px; letter-spacing:0.3px; color:var(--text-muted); font-weight:800;">
+                  <span>Hafif</span><span class="slider-val-text" style="color:var(--accent-teal);">Önerilen</span><span>Güçlü</span>
+                </div>
+                <input type="range" class="slider filter-range" data-target="sharpen" min="1" max="100" value="50">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AUDIO ENGINE PANEL -->
+    <div id="macroAudioPanel" style="padding: 1.25rem; background: rgba(0,0,0,0.15); border-radius: var(--radius-lg); margin-bottom: 1.5rem; border-left: 4px solid var(--accent-bordo); transition: all 0.3s ease;">
+      <div class="flex-between" style="margin-bottom: 1.25rem;" id="toggleAudioEngineAccordion">
+        <div>
+          <h4 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-bordo); font-weight: 800; display: flex; align-items: center; gap: 8px; margin:0">
+            <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            <span data-i18n="conv.macroAudio">SES MOTORU</span>
+          </h4>
+        </div>
+      </div>
+      
+      <div id="audioEngineBody" style="display:block; padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1.25rem; margin-bottom:0;">
+          
+          <div class="input-group" id="audioFormatGroup" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.audioTargetFormat" style="font-weight: 700;">Hedef Ses Formatı</label>
+            <div class="select-wrapper">
+              <select class="select" id="convAudioFormat" style="background: var(--bg-input);">
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.audioCodec" style="font-weight: 700;">Ses Codec</label>
+            <div class="select-wrapper">
+              <select class="select" id="convAudioCodec" style="background: var(--bg-input);"></select>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.audioBitrate" style="font-weight: 700;">Ses Bitrate</label>
+            <div class="select-wrapper">
+              <select class="select" id="convABitrate" style="background: var(--bg-input);">
+                <option value="original" selected data-i18n="conv.abrOriginal">Orijinal</option>
+                <option value="320k" data-i18n="conv.abr320">320 kbps (Yüksek Kalite)</option>
+                <option value="256k" data-i18n="conv.abr256">256 kbps (Çok İyi)</option>
+                <option value="192k" data-i18n="conv.abr192">192 kbps (Standart)</option>
+                <option value="128k" data-i18n="conv.abr128">128 kbps (Kompakt)</option>
+                <option value="96k" data-i18n="conv.abr96">96 kbps (Düşük)</option>
+                <option value="64k" data-i18n="conv.abr64">64 kbps (Çok Düşük)</option>
+                <option value="custom" data-i18n="conv.customInput">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convABitrateCustom" style="display:none; margin-top:8px;">
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="number" id="convABitrateInput" class="input font-mono" placeholder="160" min="8" max="2000" title="Min: 8 kbps, Max: 2000 kbps" style="width:100%; padding-right:48px;">
+                <span style="position:absolute; right:10px; font-size:11px; color:var(--text-muted); pointer-events:none;">kbps</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.sampleRate" style="font-weight: 700;">Örnekleme Hızı</label>
+            <div class="select-wrapper">
+              <select class="select" id="convSampleRate" style="background: var(--bg-input);">
+                <option value="original" data-i18n="conv.srOriginal">Orijinal</option>
+                <option value="192000">192000 Hz (Yüksek Çözünürlük)</option>
+                <option value="96000">96000 Hz (Stüdyo)</option>
+                <option value="88200">88200 Hz (Stüdyo CD)</option>
+                <option value="48000">48000 Hz (Video Standart)</option>
+                <option value="44100">44100 Hz (CD Kalitesi)</option>
+                <option value="32000">32000 Hz (Radyo/Eski Standart)</option>
+                <option value="22050">22050 Hz (Kompakt)</option>
+                <option value="16000">16000 Hz (Sesli İletişim)</option>
+                <option value="8000">8000 Hz (Telefon Kalitesi)</option>
+                <option value="custom" data-i18n="conv.customInput">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convSampleRateCustom" style="display:none; margin-top:8px;">
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="number" id="convSampleRateInput" class="input font-mono" placeholder="48000" min="1" max="100000000" title="Teorik Min: 1 Hz" style="width:100%; padding-right:32px;">
+                <span style="position:absolute; right:10px; font-size:11px; color:var(--text-muted); pointer-events:none;">Hz</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.channels" style="font-weight: 700;">Kanal Sayısı</label>
+            <div class="select-wrapper">
+              <select class="select" id="convChannels" style="background: var(--bg-input);">
+                <option value="original" data-i18n="conv.chOriginal">Orijinal</option>
+                <option value="1" data-i18n="conv.chMono">Mono (1 kanal)</option>
+                <option value="2" data-i18n="conv.chStereo">Stereo (2 kanal)</option>
+                <option value="6" data-i18n="conv.ch51">5.1 Surround (6 kanal)</option>
+                <option value="custom" data-i18n="conv.customInput">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convChannelsCustom" style="display:none; margin-top:8px;">
+              <input type="number" id="convChannelsInput" class="input font-mono" placeholder="4" min="1" max="64" title="Min: 1 kanal, Max: 64 kanal" style="width:100%;">
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom:0;">
+            <label class="input-label" data-i18n="conv.volume" style="font-weight: 700;">Ses Seviyesi</label>
+            <div class="select-wrapper">
+              <select class="select" id="convVolume" style="background: var(--bg-input);">
+                <option value="original" data-i18n="conv.volOriginal">Orijinal (100%)</option>
+                <option value="50">50%</option>
+                <option value="150">150%</option>
+                <option value="200">200%</option>
+                <option value="custom" data-i18n="conv.customInput">Özel (Elle Gir)</option>
+              </select>
+            </div>
+            <div id="convVolumeCustom" style="display:none; margin-top:8px;">
+              <div style="position:relative; display:flex; align-items:center;">
+                <input type="number" id="convVolumeInput" class="input font-mono" placeholder="100" min="0" max="500" title="Min: 0%, Max: 500%" style="width:100%; padding-right:32px;">
+                <span style="position:absolute; right:10px; font-size:11px; color:var(--text-muted); pointer-events:none;">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Filters Section -->
+        <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.05);">
+          <h5 style="margin-bottom: 1rem; color: var(--accent-bordo); font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase;">✨ GELİŞMİŞ SES FİLTRELERİ</h5>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem; align-items:start;">
+            
+            <div class="filter-item-wrapper" style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="audiodenoise">
+                <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+                <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterAudioDenoise">Dip Ses / Uğultu Temizleyici</span>
+              </div>
+              <div class="filter-slider" id="slider-audiodenoise" style="display:none; padding-left:52px; padding-right:10px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:11.5px; letter-spacing:0.3px; color:var(--text-muted); font-weight:800;">
+                  <span>Hafif</span><span class="slider-val-text" style="color:var(--accent-teal);">Önerilen</span><span>Güçlü</span>
+                </div>
+                <input type="range" class="slider filter-range" data-target="audiodenoise" min="1" max="100" value="50">
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" class="filter-toggle" data-filter="loudnorm">
+              <div class="toggle"><div class="toggle-track"><div class="toggle-thumb"></div></div></div>
+              <span class="text-sm font-bold" style="color:var(--text-secondary);" data-i18n="conv.filterLoudnorm">Akıllı Ses Eşitleyici</span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Start Button -->
+    <button class="btn btn-primary btn-lg mt-lg" style="width: 100%; justify-content: center; border-radius: var(--radius-lg); font-weight: 800; font-size: 1.25rem; letter-spacing: 1px; padding: 18px; display: flex; align-items: center; gap: 10px;" id="btnStartConvert">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+        <path d="M17 1l4 4-4 4"></path>
+        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+        <path d="M7 23l-4-4 4-4"></path>
+        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+      </svg>
+      <span data-i18n="conv.convert">ÇEVİRİMİ BAŞLAT</span>
+    </button>
+  </div>
+
+  <div id="tabQuickTemplates" style="display:block;"></div>
+
+  
+</div>
+<!-- Aktif Dönüştürülenler Kuyruğu -->
+<div class="convert-queue" id="convertQueue" style="display: none; margin-top: 1.5rem; margin-bottom: 2rem;"></div>
+</div>

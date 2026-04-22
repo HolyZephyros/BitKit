@@ -1,0 +1,31 @@
+node_modules/
+.DS_Store
+dist/
+*.log
+resources/bin/*.exe
+resources/bin/*.json
+!resources/bin/README.md
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# AI / Development
+.agents/
+scratch/
+
+# User data
+cookies.txt
+*.cookies
+
+# Electron build artifacts
+out/
+release/
+*.nsis
+*.blockmap

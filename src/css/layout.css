@@ -1,0 +1,318 @@
+/* ===== BitKit Layout ===== */
+
+/* ---- App Shell ---- */
+.app-shell {
+  display: grid;
+  grid-template-rows: var(--titlebar-height) 1fr var(--statusbar-height);
+  grid-template-columns: var(--sidebar-width-collapsed) 1fr 320px;
+  grid-template-areas:
+    "titlebar titlebar titlebar"
+    "sidebar  main     panel"
+    "statusbar statusbar statusbar";
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.app-shell.sidebar-expanded {
+  grid-template-columns: var(--sidebar-width-expanded) 1fr 320px;
+}
+
+.app-shell.panel-hidden {
+  grid-template-columns: var(--sidebar-width-collapsed) 1fr;
+  grid-template-areas:
+    "titlebar titlebar"
+    "sidebar  main"
+    "statusbar statusbar";
+}
+
+.app-shell.sidebar-expanded.panel-hidden {
+  grid-template-columns: var(--sidebar-width-expanded) 1fr;
+}
+
+/* ---- Titlebar ---- */
+.titlebar {
+  grid-area: titlebar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-sm);
+  background: var(--bg-deepest);
+  border-bottom: 1px solid var(--glass-border);
+  -webkit-app-region: drag;
+  z-index: 10;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md); /* Increased gap for breathing room */
+  padding-left: 11px; /* Align exact geometric center with sidebar icons */
+}
+
+.titlebar-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  /* Removed drop-shadow to prevent blurring on certain custom icons */
+}
+
+.titlebar-title {
+  font-size: var(--text-md); /* Bump from sm to md */
+  font-weight: 800; /* Max typography weight */
+  color: var(--text-primary);
+  letter-spacing: 1px; /* Wide premium tracking */
+  font-family: var(--font-heading);
+}
+
+.titlebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-btn {
+  width: 46px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.titlebar-btn:hover {
+  background: var(--glass-hover);
+  color: var(--text-primary);
+}
+
+.titlebar-btn.close:hover {
+  background: var(--error);
+  color: white;
+}
+
+.titlebar-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--glass-border);
+  padding: var(--space-sm) 0;
+  overflow: hidden;
+  transition: width var(--transition-slow);
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Butonlar arası boşluk açıldı */
+  padding: 0 var(--space-sm);
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 13px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  border: none;
+  background: none;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-expanded .sidebar-item {
+  padding-right: var(--space-md);
+}
+
+.sidebar-item:hover {
+  background: var(--glass-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: var(--accent-teal-dim);
+  color: var(--text-primary);
+  box-shadow: inset 3px 0 0 var(--accent-teal);
+}
+
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--accent-teal);
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+}
+
+.sidebar-item svg {
+  width: 22px; /* İkon boyutu büyütüldü */
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.sidebar-item-label {
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.sidebar-expanded .sidebar-item-label {
+  opacity: 1;
+}
+
+.sidebar-toggle {
+  padding: var(--space-sm);
+  margin: 0 var(--space-sm);
+  border-top: 1px solid var(--glass-border);
+}
+
+.sidebar-footer {
+  padding: var(--space-sm) var(--space-sm);
+  border-top: 1px solid var(--glass-border);
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar-version {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ---- Main Content ---- */
+.main-content {
+  grid-area: main;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-lg);
+  background: var(--bg-primary);
+}
+
+.page {
+  display: none;
+  animation: pageIn 300ms ease-out;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.page-title {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* ---- Right Panel ---- */
+.right-panel {
+  grid-area: panel;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--glass-border);
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.panel-section {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.panel-section-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-md);
+}
+
+/* ---- Status Bar ---- */
+.statusbar {
+  grid-area: statusbar;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-md);
+  background: var(--bg-deepest);
+  border-top: 1px solid var(--glass-border);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.statusbar-left,
+.statusbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.status-dot.error {
+  background: var(--error);
+}
+
+.status-dot.warning {
+  background: var(--warning);
+}

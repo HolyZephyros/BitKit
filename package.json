@@ -1,0 +1,74 @@
+{
+  "name": "bitkit",
+  "version": "1.0.0",
+  "description": "BitKit — All-in-one media toolkit powered by yt-dlp & ffmpeg",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "fetch-bins": "powershell -ExecutionPolicy Bypass -File scripts/fetch-bins.ps1",
+    "prebuild": "powershell -Command \"if (Test-Path dist) { Remove-Item -Recurse -Force dist }\" && npm run fetch-bins",
+    "build": "electron-builder",
+    "prepackage": "npm run fetch-bins",
+    "package": "electron-builder --win",
+    "prepublish-app": "npm run fetch-bins",
+    "publish-app": "electron-builder -p always",
+    "release": "node scripts/release.js"
+  },
+  "build": {
+    "appId": "com.bitkit.app",
+    "productName": "BitKit",
+    "files": [
+      "**/*",
+      "!**/*.cookies",
+      "!cookies.txt",
+      "!scratch${/*}",
+      "!scripts${/*}",
+      "!docs${/*}",
+      "!.agents${/*}",
+      "!.vscode${/*}",
+      "!**/*.log"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/icons/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "artifactName": "BitKit-Setup-${version}.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "resources/bin",
+        "to": "bin"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "HolyZephyros",
+        "repo": "BitKit"
+      }
+    ]
+  },
+  "keywords": [
+    "yt-dlp",
+    "ffmpeg",
+    "video",
+    "downloader",
+    "converter"
+  ],
+  "author": "BitKit",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.8.3"
+  }
+}

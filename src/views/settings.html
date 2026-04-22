@@ -1,0 +1,152 @@
+<!-- --- Settings Page --- -->
+<div class="page" id="page-settings">
+<div class="flex-col gap-lg">
+<!-- General -->
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-i18n="settings.general">Genel</h3>
+</div>
+<div class="flex-col">
+<div class="input-group">
+<label class="input-label" data-i18n="settings.defaultFolder">Varsayılan İndirme Klasörü</label>
+<div class="flex-row gap-sm">
+<input class="input" id="settingsDownloadPath" readonly="" type="text"/>
+<button class="btn btn-ghost" data-i18n="settings.changeFolder" id="btnSettingsFolder">Değiştir</button>
+</div>
+</div>
+<div class="input-group">
+<label class="input-label" data-i18n="settings.convertFolder">Varsayılan Çeviri Klasörü</label>
+<div class="flex-row gap-sm">
+<input class="input" data-i18n-ph="settings.convertPathPlaceholder" id="settingsConvertPath" placeholder="Orijinal Klasör (Dosyanın Yanı)" readonly="" type="text"/>
+<button class="btn btn-ghost" data-i18n="settings.changeFolder" id="btnSettingsConvertFolder">Değiştir</button>
+</div>
+</div>
+<div class="input-group">
+<label class="input-label" data-i18n="settings.language">Dil</label>
+<div class="select-wrapper" style="max-width:200px">
+<select class="select" id="settingsLanguage">
+<option value="en">English</option>
+<option value="de">Deutsch</option>
+<option value="es">Español</option>
+<option value="fr">Français</option>
+<option value="it">Italiano</option>
+<option value="pl">Polski</option>
+<option value="pt">Português</option>
+<option value="ru">Русский</option>
+<option value="tr">Türkçe</option>
+<option value="ja">日本語</option>
+<option value="zh">中文</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- System & Tools -->
+<div class="card">
+<div class="card-header flex-between" style="border-bottom:1px solid var(--glass-border); padding-bottom:var(--space-sm); margin-bottom:var(--space-md)">
+<h3 class="card-title" data-i18n="settings.systemTools">Sistem &amp; Araçlar</h3>
+<button class="btn btn-primary btn-sm" id="btnUpdateAll">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 22v-6h6"></path></svg>
+<span data-i18n="settings.updateBtn" id="btnUpdateAllText">Güncelle</span>
+</button>
+</div>
+<div class="flex-col gap-sm">
+<div class="flex-between">
+<span class="text-md text-secondary" data-i18n="settings.versionCode">BitKit Sürümü</span>
+<span class="text-md font-mono" data-i18n="settings.checking" id="settingsAppVersion">Kontrol ediliyor...</span>
+</div>
+<div class="flex-between">
+<span class="text-md text-secondary">yt-dlp</span>
+<span class="text-md font-mono" data-i18n="settings.checking" id="settingsYtdlpVersion">Kontrol ediliyor...</span>
+</div>
+<div class="flex-between">
+<span class="text-md text-secondary">FFmpeg</span>
+<span class="text-md font-mono" data-i18n="settings.checking" id="settingsFfmpegVersion">Kontrol ediliyor...</span>
+</div>
+</div>
+</div>
+<!-- Cookies -->
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-i18n="settings.cookies">Site Çerezleri (Cookies)</h3>
+</div>
+<div class="flex-col gap-sm">
+<p class="text-secondary" data-i18n="settings.cookiesDesc" style="font-size: 1rem; line-height: 1.6;">Giriş gerektiren veya kısıtlı içerikleri indirmek için cookies.txt dosyanızı yükleyin. YouTube, Instagram, Twitter ve diğer platformlar için geçerlidir.</p>
+<div class="input-group mt-md">
+<div class="flex-row gap-sm">
+<input class="input" data-i18n-ph="settings.cookiesPlaceholder" id="settingsCookiesPath" placeholder="cookies.txt dosyası seçilmedi" readonly="" style="font-size: 1.05rem;" type="text"/>
+<button class="btn btn-ghost" data-i18n="settings.cookiesSelect" id="btnSettingsCookies">Seç</button>
+<button class="btn btn-ghost" data-i18n="settings.cookiesClear" id="btnClearCookies" style="color:var(--accent-bordo)">Temizle</button>
+</div>
+</div>
+<!-- Cookies How-To Collapsible -->
+<details class="cookies-howto mt-md">
+<summary class="cookies-howto-toggle">
+<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+<span data-i18n="settings.cookiesHowTo">Nasıl alınır?</span>
+<svg class="cookies-howto-chevron" fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</summary>
+<div class="cookies-howto-content">
+<h4 class="cookies-howto-title" data-i18n="settings.cookiesHowToTitle">cookies.txt Nasıl Elde Edilir?</h4>
+<ol class="cookies-howto-steps">
+<li>
+<span class="cookies-step-num">1</span>
+<span data-i18n="settings.cookiesStep1">Chrome veya Firefox'a "Get cookies.txt LOCALLY" eklentisini kurun.</span>
+</li>
+<li>
+<span class="cookies-step-num">2</span>
+<span data-i18n="settings.cookiesStep2">İndirmek istediğiniz sitenin anasayfasına gidin (ör: youtube.com) ve hesabınıza giriş yapın.</span>
+</li>
+<li>
+<span class="cookies-step-num">3</span>
+<span data-i18n="settings.cookiesStep3">Anasayfadayken eklenti ikonuna tıklayıp "Export" butonuna basın.</span>
+</li>
+<li>
+<span class="cookies-step-num">4</span>
+<span data-i18n="settings.cookiesStep4">İndirilen cookies.txt dosyasını yukarıdaki "Seç" butonu ile yükleyin.</span>
+</li>
+</ol>
+<div class="cookies-howto-platforms">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+<span data-i18n="settings.cookiesPlatforms">Desteklenen platformlar: YouTube, Instagram, Twitter/X, Facebook, TikTok ve 1800+ site</span>
+</div>
+<div class="cookies-howto-tip">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+<span data-i18n="settings.cookiesTip">Eklenti önerisi: "Get cookies.txt LOCALLY"</span>
+<span style="margin-left:4px;">
+  <a href="javascript:void(0)" onclick="window.bitkit.shell.openExternal('https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc')" style="color:var(--primary); font-weight:600; text-decoration:none; cursor:pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">(Chrome</a>
+  <span style="color:var(--text-muted); margin:0 2px;">/</span>
+  <a href="javascript:void(0)" onclick="window.bitkit.shell.openExternal('https://addons.mozilla.org/en-US/firefox/addon/get-cookies-txt-locally/')" style="color:var(--primary); font-weight:600; text-decoration:none; cursor:pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Firefox)</a>
+</span>
+</div>
+<div class="cookies-howto-warning">
+<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+<span data-i18n="settings.cookiesWarning">Cookies dosyanızı kimseyle paylaşmayın! Hesap bilgilerinizi içerir.</span>
+</div>
+</div>
+</details>
+</div>
+</div>
+<!-- About -->
+<div class="card">
+<div class="card-header">
+<h3 class="card-title" data-i18n="settings.about">Hakkında</h3>
+</div>
+<div class="flex-row gap-lg">
+<img alt="BitKit" src="assets/icons/icon.png" style="width:64px;height:64px;border-radius:var(--radius-md);object-fit:contain;"/>
+<div>
+<div class="text-xl" style="font-weight:800; letter-spacing: -0.5px; display: flex; align-items: center;">
+  BitKit
+</div>
+<div class="text-sm mt-xs" style="margin-top: 6px;">
+  <a href="javascript:void(0)" onclick="window.bitkit.shell.openExternal('https://github.com/HolyZephyros/BitKit')" style="color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+    GitHub / Yusuf Ziya İskender (HolyZephyros)
+  </a>
+</div>
+<div class="text-xs text-muted" style="margin-top: 6px;" data-i18n="settings.copyright">Her hakkı saklıdır © 2026</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BitKit</title>
+<link href="css/design-system.css" rel="stylesheet"/>
+<link href="css/layout.css" rel="stylesheet"/>
+<link href="css/components.css" rel="stylesheet"/>
+<link href="css/animations.css" rel="stylesheet"/>
+<link href="css/downloader.css" rel="stylesheet"/>
+<link href="css/converter.css?v=3" rel="stylesheet"/>
+<link href="css/extras.css" rel="stylesheet"/>
+<link href="css/mode-toggle.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="app-shell panel-hidden" id="appShell">
+<!-- ============ TITLEBAR ============ -->
+<header class="titlebar">
+<div class="titlebar-left">
+<img alt="BitKit" class="titlebar-logo" src="assets/icons/icon.png"/>
+<span class="titlebar-title">BitKit</span>
+</div>
+<div class="titlebar-controls">
+<button class="titlebar-btn" data-i18n-tip="titlebar.minimize" id="btnMinimize">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><path d="M6 12h12"></path></svg>
+</button>
+<button class="titlebar-btn" data-i18n-tip="titlebar.maximize" id="btnMaximize">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><rect height="12" rx="1.5" width="12" x="6" y="6"></rect></svg>
+</button>
+<button class="titlebar-btn close" data-i18n-tip="titlebar.close" id="btnClose">
+<svg fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+</button>
+</div>
+</header>
+<!-- ============ SIDEBAR ============ -->
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-nav">
+<button class="sidebar-item active" data-page="downloader">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+<span class="sidebar-item-label" data-i18n="nav.downloader">İndirici</span>
+</button>
+<button class="sidebar-item" data-page="converter">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+<span class="sidebar-item-label" data-i18n="nav.converter">Çevirici</span>
+</button>
+
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px;">
+<button class="sidebar-item" data-page="history">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12,6 12,12 16,14"></polyline></svg>
+<span class="sidebar-item-label" data-i18n="nav.history">Geçmiş</span>
+</button>
+<button class="sidebar-item" data-page="settings">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+<span class="sidebar-item-label" data-i18n="nav.settings">Ayarlar</span>
+</button>
+</div>
+</div>
+<div class="sidebar-footer">
+<button class="sidebar-item" id="sidebarToggle">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M11 19l-7-7 7-7"></path><path d="M18 19l-7-7 7-7"></path></svg>
+<span class="sidebar-item-label" data-i18n="nav.collapse">Daralt</span>
+</button>
+</div>
+</nav>
+<!-- ============ MAIN CONTENT ============ -->
+<main class="main-content" id="mainContent">
+
+</main>
+<!-- ============ STATUS BAR ============ -->
+<footer class="statusbar">
+<div class="statusbar-left"></div>
+<div class="statusbar-right">
+<span data-i18n="status.noActiveTasks" id="activeDownloads">0 aktif işlem</span>
+<span>|</span>
+<span class="font-mono" id="statusVersions">BitKit v---</span>
+</div>
+</footer>
+</div>
+<!-- ============ TOAST CONTAINER ============ -->
+<div id="toastContainer" style="position:fixed;bottom:48px;right:16px;display:flex;flex-direction:column-reverse;gap:8px;z-index:var(--z-toast);pointer-events:none;"></div>
+<!-- ============ COMMAND PALETTE ============ -->
+<div class="modal-overlay" id="commandPaletteOverlay" style="display:none">
+<div class="command-palette" id="commandPalette">
+<input autofocus="" class="input" data-i18n-ph="cmd.placeholder" id="commandInput" placeholder="Komut veya sayfa ara..." type="text"/>
+<div class="command-list" id="commandList"></div>
+</div>
+</div>
+<style>
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: var(--z-command-palette);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 20vh;
+    animation: modalOverlayIn 150ms ease-out;
+  }
+  .command-palette {
+    width: 500px;
+    max-width: 90vw;
+    background: var(--bg-elevated);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: modalContentIn 200ms ease-out;
+  }
+  .command-palette .input {
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid var(--glass-border);
+    padding: 16px 20px;
+    font-size: var(--text-md);
+    background: transparent;
+    box-shadow: none;
+  }
+  .command-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--space-sm);
+  }
+  .command-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+  }
+  .command-item:hover, .command-item.selected {
+    background: var(--accent-teal-dim);
+    color: var(--text-primary);
+  }
+  .command-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+  .command-item-label { flex: 1; }
+  .command-item-shortcut {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+</style>
+<!-- Scripts -->
+<script src="js/i18n.js"></script>
+<script src="js/utils/ipc.js"></script>
+<script src="js/utils/formatters.js"></script>
+<!-- Core -->
+<script src="js/core/state.js"></script>
+<script src="js/core/codecCaps.js"></script>
+<script src="js/utils/errorHandler.js"></script>
+<!-- UI -->
+<script src="js/ui/toast.js"></script>
+<script src="js/ui/modal.js"></script>
+<script src="js/ui/windowControls.js"></script>
+<script src="js/ui/navigation.js"></script>
+<script src="js/ui/components.js"></script>
+<script src="js/ui/commandPalette.js"></script>
+<!-- Features -->
+<script src="js/features/downloader.js"></script>
+<script src="js/features/converter.js"></script>
+<script src="js/features/converter-quick.js"></script>
+<script src="js/features/history.js"></script>
+<script src="js/features/settings.js"></script>
+<!-- Main App (Must run last) -->
+<script src="js/app.js"></script>
+</body>
+</html>
