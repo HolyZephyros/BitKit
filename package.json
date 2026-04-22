@@ -33,7 +33,8 @@
     },
     "nsis": {
       "oneClick": true,
-      "artifactName": "BitKit-Setup-${version}.${ext}"
+      "artifactName": "BitKit-Setup-${version}.${ext}",
+      "differentialPackage": true
     },
     "extraResources": [
       {
