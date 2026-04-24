@@ -1452,6 +1452,12 @@ document.addEventListener('bitkit:quickConvert', async (e) => {
   if (btnQuick) btnQuick.setAttribute('disabled', 'true');
 
   try {
+    let settings = state.settings;
+    if (!settings && window.bitkit?.settings?.get) {
+      settings = await window.bitkit.settings.get();
+    }
+    const customDir = settings?.convertPath;
+
     for (const inputPath of convState.paths) {
       const sourceExt = inputPath.split('.').pop().toLowerCase();
 
@@ -1464,7 +1470,18 @@ document.addEventListener('bitkit:quickConvert', async (e) => {
       else if (templateId === 'webp_anim') targetExt = 'webp';
       else if (templateId === 'thumbnail') targetExt = 'png';
 
-      const baseName = inputPath.replace(/\.[^/.]+$/, "");
+      const isWin = inputPath.includes('\\');
+      const sep = isWin ? '\\' : '/';
+      const parts = inputPath.split(/[\\/]/);
+      const filename = parts.pop();
+      const lastDot = filename.lastIndexOf('.');
+      const pureName = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+
+      let targetDir = customDir;
+      if (!targetDir) {
+        targetDir = parts.join(sep);
+      }
+
       const suffix = `_BitKit_${templateId}`;
       let requestedOutputPath;
 
@@ -1472,9 +1489,9 @@ document.addEventListener('bitkit:quickConvert', async (e) => {
         (templateId === 'multi_filter' && params?.filters?.some(f => f.id === 'split'));
 
       if (hasSplit) {
-        requestedOutputPath = `${baseName}${suffix}_%03d.${targetExt}`;
+        requestedOutputPath = `${targetDir}${sep}${pureName}${suffix}_%03d.${targetExt}`;
       } else {
-        requestedOutputPath = `${baseName}${suffix}.${targetExt}`;
+        requestedOutputPath = `${targetDir}${sep}${pureName}${suffix}.${targetExt}`;
       }
 
       if (!hasSplit && window.bitkit?.fileManager?.getUniquePath) {

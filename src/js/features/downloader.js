@@ -1360,6 +1360,7 @@ function startQueuedItem(index) {
   const item = state.pendingQueue.splice(index, 1)[0];
   renderPendingQueue();
 
+  item.options.outputPath = state.settings.downloadPath;
   window.bitkit.download.start(item.url, item.options).then(result => {
     if (result.success) {
       state.downloads.set(result.id, {
