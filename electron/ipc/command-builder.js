@@ -43,6 +43,15 @@ function getSourceInfo(inputPath, getBinPath) {
   });
 }
 
+function getDynamicCrf(sourceInfo, baseCrf) {
+  let crf = baseCrf;
+  if (sourceInfo && sourceInfo.height) {
+    let calc = Math.round(baseCrf + 4 * Math.log2(sourceInfo.height / 1080));
+    crf = Math.max(10, Math.min(45, calc));
+  }
+  return crf.toString();
+}
+
 async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
   const args = [];
   let durationMultiplier = 1;
@@ -81,23 +90,16 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const vcodec = p['sc-vcodec'] || 'libx264';
         const acodec = p['sc-acodec'] || 'aac';
 
-        let dynamicCrf = 14;
-        if (sourceInfo && sourceInfo.height) {
-          // 1080p = CRF 14 (Zero Compromise)
-          // 4K (2160p) = CRF 18 (Görsel olarak kayıpsız, piksel yoğunluğu kurtarır)
-          // 8K (4320p) = CRF 22
-          let calc = Math.round(14 + 4 * Math.log2(sourceInfo.height / 1080));
-          dynamicCrf = Math.max(10, Math.min(30, calc));
-        }
+        const dynCrf = getDynamicCrf(sourceInfo, 14);
 
         args.push('-c:v', vcodec);
         if (vcodec !== 'copy') {
           if (vcodec === 'libvpx-vp9') {
-            args.push('-crf', dynamicCrf.toString(), '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-row-mt', '1');
+            args.push('-crf', dynCrf, '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-row-mt', '1');
           } else if (vcodec === 'libaom-av1') {
-            args.push('-crf', dynamicCrf.toString(), '-b:v', '0', '-cpu-used', '4', '-row-mt', '1');
+            args.push('-crf', dynCrf, '-b:v', '0', '-cpu-used', '4', '-row-mt', '1');
           } else if (['libx264', 'libx265'].includes(vcodec)) {
-            args.push('-crf', dynamicCrf.toString(), '-preset', 'slower');
+            args.push('-crf', dynCrf, '-preset', 'slower');
           } else if (vcodec === 'mpeg4') {
             args.push('-vtag', 'xvid', '-q:v', '2');
           } else if (vcodec === 'mpeg2video') {
@@ -118,7 +120,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         break;
       }
       case 'tiktok':
-        args.push('-c:v', 'libx264', '-crf', '16', '-preset', 'slow');
+        args.push('-c:v', 'libx264', '-crf', getDynamicCrf(sourceInfo, 16), '-preset', 'slow');
         args.push('-vf', 'format=yuv444p,split[original][copy];[copy]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:20[bg];[original]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,format=yuv420p');
         args.push('-c:a', 'aac', '-b:a', '320k');
         break;
@@ -226,18 +228,14 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         if (vfmt === 'original') {
           args.push('-c:v', 'copy');
         } else {
-          let dynamicCrf = 14;
-          if (sourceInfo && sourceInfo.height) {
-            let calc = Math.round(14 + 4 * Math.log2(sourceInfo.height / 1080));
-            dynamicCrf = Math.max(10, Math.min(30, calc));
-          }
+          const dynCrf = getDynamicCrf(sourceInfo, 14);
 
           if (vfmt === 'avi') {
             args.push('-c:v', 'mpeg4', '-vtag', 'xvid', '-q:v', '2');
           } else if (vfmt === 'webm') {
-            args.push('-c:v', 'libvpx-vp9', '-crf', dynamicCrf.toString(), '-b:v', '0', '-row-mt', '1');
+            args.push('-c:v', 'libvpx-vp9', '-crf', dynCrf, '-b:v', '0', '-row-mt', '1');
           } else {
-            args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', dynamicCrf.toString());
+            args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', dynCrf);
           }
         }
         break;
@@ -249,16 +247,10 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         args.push('-c:v', 'libwebp', '-lossless', '0', '-q:v', '70', '-preset', 'default', '-loop', '0', '-an', '-vf', 'fps=15,scale=720:-1:flags=lanczos');
         break;
       case 'webm':
-        args.push('-c:v', 'libvpx-vp9', '-crf', '20', '-b:v', '0', '-row-mt', '1', '-auto-alt-ref', '0', '-c:a', 'libopus', '-b:a', '320k');
+        args.push('-c:v', 'libvpx-vp9', '-crf', getDynamicCrf(sourceInfo, 20), '-b:v', '0', '-row-mt', '1', '-auto-alt-ref', '0', '-c:a', 'libopus', '-b:a', '320k');
         break;
       case 'max_compression': {
-        let dynamicCrf = 24;
-        if (sourceInfo && sourceInfo.height) {
-
-          let calc = Math.round(20 + 4 * Math.log2(sourceInfo.height / 1080));
-          dynamicCrf = Math.max(14, Math.min(40, calc));
-        }
-        args.push('-c:v', 'libx265', '-crf', dynamicCrf.toString(), '-preset', 'slow', '-tag:v', 'hvc1', '-c:a', 'aac', '-b:a', '320k');
+        args.push('-c:v', 'libx265', '-crf', getDynamicCrf(sourceInfo, 20), '-preset', 'slow', '-tag:v', 'hvc1', '-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'trim': {
@@ -266,7 +258,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         if (mode === 'fast') {
           args.push('-c', 'copy');
         } else {
-          args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', '14', '-c:a', 'aac', '-b:a', '320k');
+          args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', getDynamicCrf(sourceInfo, 14), '-c:a', 'aac', '-b:a', '320k');
         }
         break;
       }
@@ -287,13 +279,13 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         break;
       }
       case 'grayscale': {
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', getDynamicCrf(sourceInfo, 16));
         args.push('-vf', 'format=gray');
         args.push('-c:a', 'copy');
         break;
       }
       case 'deshake': {
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', getDynamicCrf(sourceInfo, 16));
         args.push('-vf', 'deshake');
         args.push('-c:a', 'copy');
         break;
@@ -304,7 +296,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         let tmp = parseFloat((dnVal / 10 * 1.5).toFixed(1));
         if (luma < 1.0) luma = 1.0;
         if (tmp < 1.0) tmp = 1.0;
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', getDynamicCrf(sourceInfo, 16));
         args.push('-vf', `hqdn3d=${luma}:${luma}:${tmp}:${tmp}`);
         args.push('-c:a', 'copy');
         break;
@@ -313,7 +305,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const shVal = p.value ? parseInt(p.value) : 50;
         let amount = parseFloat((shVal / 50).toFixed(2));
         if (amount < 0.1) amount = 0.1;
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', getDynamicCrf(sourceInfo, 16));
         args.push('-vf', `unsharp=5:5:${amount}`);
         args.push('-c:a', 'copy');
         break;
