@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Formato ora non valido. Usa solo numeri e punteggiatura (:,.)",
   "settings.concurrentDownloads": "Limite di download simultanei",
   "settings.concurrentDesc": "Imposta quanti video vengono scaricati contemporaneamente.",
-  "settings.concurrentWarning": "Avviso: Scaricare più di 1 video contemporaneamente può causare blocchi IP (HTTP 429) su piattaforme come YouTube."
+  "settings.concurrentWarning": "Avviso: Scaricare più di 1 video contemporaneamente può causare blocchi IP (HTTP 429) su piattaforme come YouTube.",
+  "updater": {
+    "devModeError": "Impossibile aggiornare in modalità di sviluppo. Si prega di compilare l'applicazione."
+  }
 }

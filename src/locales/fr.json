@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Format d'heure invalide. Utilisez uniquement des chiffres et de la ponctuation (:,.)",
   "settings.concurrentDownloads": "Limite de téléchargements simultanés",
   "settings.concurrentDesc": "Définit le nombre de vidéos téléchargées simultanément.",
-  "settings.concurrentWarning": "Avertissement : Le téléchargement simultané de plus d'une vidéo peut entraîner des blocages d'IP (HTTP 429) sur des plateformes comme YouTube."
+  "settings.concurrentWarning": "Avertissement : Le téléchargement simultané de plus d'une vidéo peut entraîner des blocages d'IP (HTTP 429) sur des plateformes comme YouTube.",
+  "updater": {
+    "devModeError": "Impossible de mettre à jour en mode développement. Veuillez compiler l'application."
+  }
 }

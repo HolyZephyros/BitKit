@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "無効な時間形式です。数字と句読点（:,.) のみを使用してください。",
   "settings.concurrentDownloads": "同時ダウンロード制限",
   "settings.concurrentDesc": "同時にダウンロードする動画の数を設定します。",
-  "settings.concurrentWarning": "警告：同時に1つ以上の動画をダウンロードすると、YouTubeなどのプラットフォームでIPバン（HTTP 429）が発生する可能性があります。"
+  "settings.concurrentWarning": "警告：同時に1つ以上の動画をダウンロードすると、YouTubeなどのプラットフォームでIPバン（HTTP 429）が発生する可能性があります。",
+  "updater": {
+    "devModeError": "開発モードでは更新できません。アプリケーションをビルドしてください。"
+  }
 }

@@ -123,10 +123,24 @@ function register(ipcMain, getBinPath, app) {
 
   ipcMain.handle('updater:installApp', async () => {
     try {
+      if (!app.isPackaged) {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('app:updateError', 'DEV_MODE_ERROR');
+        }
+        return { success: false, error: 'DEV_MODE_ERROR' };
+      }
       const flagPath = path.join(app.getPath('userData'), 'pending-update.json');
       if (fs.existsSync(flagPath)) fs.unlinkSync(flagPath);
-    } catch (e) {}
-    autoUpdater.quitAndInstall(true, true);
+      
+      autoUpdater.quitAndInstall(true, true);
+      return { success: true };
+    } catch (e) {
+      console.error('[BitKit:Updater] Install failed:', e);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('app:updateError', e.message);
+      }
+      return { success: false, error: e.message };
+    }
   });
 
   ipcMain.handle('updater:checkYtdlp', async () => {

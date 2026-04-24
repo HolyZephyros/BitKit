@@ -81,18 +81,27 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const vcodec = p['sc-vcodec'] || 'libx264';
         const acodec = p['sc-acodec'] || 'aac';
 
+        let dynamicCrf = 14;
+        if (sourceInfo && sourceInfo.height) {
+          // 1080p = CRF 14 (Zero Compromise)
+          // 4K (2160p) = CRF 18 (Görsel olarak kayıpsız, piksel yoğunluğu kurtarır)
+          // 8K (4320p) = CRF 22
+          let calc = Math.round(14 + 4 * Math.log2(sourceInfo.height / 1080));
+          dynamicCrf = Math.max(10, Math.min(30, calc));
+        }
+
         args.push('-c:v', vcodec);
         if (vcodec !== 'copy') {
           if (vcodec === 'libvpx-vp9') {
-            args.push('-crf', '14', '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-row-mt', '1');
+            args.push('-crf', dynamicCrf.toString(), '-b:v', '0', '-deadline', 'good', '-cpu-used', '2', '-row-mt', '1');
           } else if (vcodec === 'libaom-av1') {
-            args.push('-crf', '14', '-b:v', '0', '-cpu-used', '4', '-row-mt', '1');
+            args.push('-crf', dynamicCrf.toString(), '-b:v', '0', '-cpu-used', '4', '-row-mt', '1');
           } else if (['libx264', 'libx265'].includes(vcodec)) {
-            args.push('-crf', '14', '-preset', 'slower');
+            args.push('-crf', dynamicCrf.toString(), '-preset', 'slower');
           } else if (vcodec === 'mpeg4') {
-            args.push('-vtag', 'xvid', '-q:v', '3');
+            args.push('-vtag', 'xvid', '-q:v', '2');
           } else if (vcodec === 'mpeg2video') {
-            args.push('-q:v', '3');
+            args.push('-q:v', '2');
           } else {
             args.push('-q:v', '2');
           }
@@ -100,18 +109,18 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
 
         args.push('-c:a', acodec);
         if (acodec !== 'copy') {
-          if (acodec === 'aac') args.push('-b:a', '256k');
+          if (acodec === 'aac') args.push('-b:a', '320k');
           else if (acodec === 'libmp3lame') args.push('-b:a', '320k');
           else if (acodec === 'ac3' || acodec === 'eac3') args.push('-b:a', '640k');
-          else if (acodec === 'libopus') args.push('-b:a', '192k');
+          else if (acodec === 'libopus') args.push('-b:a', '320k');
           else if (acodec === 'wmav2') args.push('-b:a', '192k');
         }
         break;
       }
       case 'tiktok':
-        args.push('-c:v', 'libx264', '-crf', '16', '-preset', 'faster');
+        args.push('-c:v', 'libx264', '-crf', '16', '-preset', 'slow');
         args.push('-vf', 'format=yuv444p,split[original][copy];[copy]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:20[bg];[original]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,format=yuv420p');
-        args.push('-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:a', 'aac', '-b:a', '320k');
         break;
       case 'discord_nitro': {
         let nitroKbps = 8000;
@@ -120,7 +129,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
           nitroKbps = Math.floor(targetTotalKbps - 192);
           nitroKbps = Math.max(500, Math.min(15000, nitroKbps));
         }
-        args.push('-c:v', 'libx264', '-preset', 'faster', '-b:v', `${nitroKbps}k`, '-maxrate', `${nitroKbps}k`, '-bufsize', `${nitroKbps * 2}k`, '-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:v', 'libx264', '-preset', 'faster', '-b:v', `${nitroKbps}k`, '-maxrate', `${nitroKbps}k`, '-bufsize', `${nitroKbps * 2}k`, '-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'discord_basic': {
@@ -148,7 +157,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const speedMultiplier = p.value ? parseFloat(p.value) : 4;
         const setpts = (1 / speedMultiplier).toFixed(4);
         durationMultiplier = 1 / speedMultiplier;
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '18');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
         args.push('-vf', `setpts=${setpts}*PTS`);
         args.push('-an');
         break;
@@ -156,7 +165,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
       case 'slowmo': {
         const slowFactor = p.value ? parseFloat(p.value) : 2;
         durationMultiplier = slowFactor;
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '18');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
         args.push('-vf', `setpts=${slowFactor.toFixed(4)}*PTS`);
         args.push('-an');
         break;
@@ -177,9 +186,9 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         break;
       }
       case 'reverse': {
-        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '18');
+        args.push('-c:v', 'libx264', '-preset', 'slow', '-crf', '16');
         args.push('-vf', 'reverse');
-        args.push('-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:a', 'aac', '-b:a', '320k');
         args.push('-af', 'areverse');
         break;
       }
@@ -188,7 +197,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         if (sourceInfo.duration && sec >= sourceInfo.duration) {
           sec = Math.max(0, Math.floor(sourceInfo.duration) - 1);
         }
-        args.push('-ss', sec.toString(), '-vframes', '1', '-q:v', '2');
+        args.push('-ss', sec.toString(), '-vframes', '1', '-q:v', '1');
         break;
       case 'audio_only':
         args.push('-vn');
@@ -208,7 +217,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         } else if (fmt === 'ogg') {
           args.push('-c:a', 'libvorbis', '-q:a', '8');
         } else if (fmt === 'opus') {
-          args.push('-c:a', 'libopus', '-b:a', '192k', '-vbr', 'on');
+          args.push('-c:a', 'libopus', '-b:a', '320k', '-vbr', 'on');
         }
         break;
       case 'video_mute': {
@@ -217,12 +226,18 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         if (vfmt === 'original') {
           args.push('-c:v', 'copy');
         } else {
+          let dynamicCrf = 14;
+          if (sourceInfo && sourceInfo.height) {
+            let calc = Math.round(14 + 4 * Math.log2(sourceInfo.height / 1080));
+            dynamicCrf = Math.max(10, Math.min(30, calc));
+          }
+
           if (vfmt === 'avi') {
             args.push('-c:v', 'mpeg4', '-vtag', 'xvid', '-q:v', '2');
           } else if (vfmt === 'webm') {
-            args.push('-c:v', 'libvpx-vp9', '-crf', '14', '-b:v', '0', '-row-mt', '1');
+            args.push('-c:v', 'libvpx-vp9', '-crf', dynamicCrf.toString(), '-b:v', '0', '-row-mt', '1');
           } else {
-            args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', '14');
+            args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', dynamicCrf.toString());
           }
         }
         break;
@@ -234,7 +249,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         args.push('-c:v', 'libwebp', '-lossless', '0', '-q:v', '70', '-preset', 'default', '-loop', '0', '-an', '-vf', 'fps=15,scale=720:-1:flags=lanczos');
         break;
       case 'webm':
-        args.push('-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0', '-row-mt', '1', '-auto-alt-ref', '0', '-c:a', 'libopus');
+        args.push('-c:v', 'libvpx-vp9', '-crf', '20', '-b:v', '0', '-row-mt', '1', '-auto-alt-ref', '0', '-c:a', 'libopus', '-b:a', '320k');
         break;
       case 'max_compression': {
         let dynamicCrf = 24;
@@ -243,7 +258,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
           let calc = Math.round(20 + 4 * Math.log2(sourceInfo.height / 1080));
           dynamicCrf = Math.max(14, Math.min(40, calc));
         }
-        args.push('-c:v', 'libx265', '-crf', dynamicCrf.toString(), '-preset', 'slow', '-tag:v', 'hvc1', '-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:v', 'libx265', '-crf', dynamicCrf.toString(), '-preset', 'slow', '-tag:v', 'hvc1', '-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'trim': {
@@ -251,7 +266,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         if (mode === 'fast') {
           args.push('-c', 'copy');
         } else {
-          args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', '14', '-c:a', 'aac', '-b:a', '192k');
+          args.push('-c:v', 'libx264', '-preset', 'slower', '-crf', '14', '-c:a', 'aac', '-b:a', '320k');
         }
         break;
       }
@@ -259,7 +274,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const vol = p.value ? parseInt(p.value) : 200;
         args.push('-c:v', 'copy');
         args.push('-af', `volume=${(vol / 100).toFixed(2)}`);
-        args.push('-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'split': {
@@ -306,7 +321,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
       case 'loudnorm': {
         args.push('-c:v', 'copy');
         args.push('-af', 'loudnorm=I=-16:TP=-1.5:LRA=11');
-        args.push('-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'audio_denoise': {
@@ -314,7 +329,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
         const nr = Math.round(4 + (adVal / 100) * 20);
         args.push('-c:v', 'copy');
         args.push('-af', `afftdn=nr=${nr}`);
-        args.push('-c:a', 'aac', '-b:a', '192k');
+        args.push('-c:a', 'aac', '-b:a', '320k');
         break;
       }
       case 'autocrop': {
@@ -533,7 +548,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
 
         if (aFilters.length > 0) {
           args.push('-af', aFilters.join(','));
-          args.push('-c:a', 'aac', '-b:a', '192k');
+          args.push('-c:a', 'aac', '-b:a', '320k');
         } else {
           args.push('-c:a', 'copy');
         }
@@ -627,7 +642,8 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
               if (!amfPresets.includes(safePreset)) safePreset = 'quality';
               args.push('-quality', safePreset);
             } else if (targetVCodec.includes('qsv')) {
-
+              if (!cpuPresets.includes(safePreset)) safePreset = 'medium';
+              args.push('-preset', safePreset);
             } else {
               if (!cpuPresets.includes(safePreset)) safePreset = 'medium';
               args.push('-preset', safePreset);
@@ -669,7 +685,11 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
               vFilters.push(`unsharp=5:5:${amount}`);
             }
 
-            if (state.filters.minterpolate) vFilters.push("minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=60'");
+            if (state.filters.minterpolate) {
+              let mFps = 60;
+              if (state.fps && state.fps !== 'original') mFps = parseFloat(state.fps);
+              vFilters.push(`minterpolate='mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=${mFps}'`);
+            }
           }
 
           if (state.resolution && state.resolution !== 'original') {
@@ -721,9 +741,6 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
 
     args.push('-c:a', targetACodec);
 
-    if (targetACodec === 'flac') {
-      args.push('-sample_fmt', 's16');
-    }
 
     if (targetACodec !== 'copy') {
          const constraints = MEGA_MATRIX.audioCodecConstraints?.[targetACodec];
@@ -735,6 +752,8 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
              abr = parseInt(state.audioBitrate, 10);
            } else if (sourceInfo.audioBitrate) {
              abr = Math.floor(parseInt(sourceInfo.audioBitrate, 10) / 1000);
+           } else {
+             abr = 320; // Fallback to safe high bitrate if metadata is completely missing
            }
 
            if (abr !== null) {
@@ -778,7 +797,6 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
            }
            if (state.filters.loudnorm) {
              aFilters.push('loudnorm=I=-16:TP=-1.5:LRA=11');
-             aFilters.push('aresample=48000');
            }
          }
 

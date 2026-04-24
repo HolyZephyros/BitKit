@@ -154,7 +154,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.bitkit.updater.onAppUpdateError((errorMsg) => {
       console.error('[BitKit] Update error:', errorMsg);
-      showToast(t('toast.updateError', {error: errorMsg}), 'error', 8000);
+      let displayMsg = errorMsg;
+      if (errorMsg === 'DEV_MODE_ERROR') displayMsg = t('updater.devModeError');
+      showToast(t('toast.updateError', {error: displayMsg}), 'error', 8000);
     });
     
     setTimeout(async () => {

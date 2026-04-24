@@ -6,7 +6,7 @@ const MEGA_MATRIX = {
         'mp4': { group: 'modern', videoCodecs: ['libx264', 'libx265', 'libaom-av1', 'libvpx-vp9', 'mpeg4'], audioCodecs: ['aac', 'libmp3lame', 'alac', 'ac3', 'libopus'] },
         'mkv': { group: 'modern', videoCodecs: ['libx264', 'libx265', 'libaom-av1', 'libvpx-vp9', 'libvpx', 'mpeg4', 'prores', 'dnxhd', 'mpeg2video'], audioCodecs: ['aac', 'libmp3lame', 'flac', 'libvorbis', 'libopus', 'ac3', 'eac3', 'truehd', 'dts', 'alac'] },
         'webm': { group: 'modern', videoCodecs: ['libvpx-vp9', 'libvpx', 'libaom-av1'], audioCodecs: ['libopus', 'libvorbis'] },
-        'mov': { group: 'modern', videoCodecs: ['libx264', 'libx265', 'prores', 'dnxhd', 'mpeg4'], audioCodecs: ['aac', 'alac', 'pcm_s16le'] },
+        'mov': { group: 'modern', videoCodecs: ['libx264', 'libx265', 'prores', 'dnxhd', 'mpeg4'], audioCodecs: ['aac', 'alac', 'pcm_s16le', 'pcm_s24le', 'pcm_s32le'] },
         'm4v': { group: 'modern', videoCodecs: ['libx264', 'libx265'], audioCodecs: ['aac', 'alac'] },
         'gif': { group: 'modern', videoCodecs: ['gif'], audioCodecs: [] },
         'apng': { group: 'modern', videoCodecs: ['apng'], audioCodecs: [] },
@@ -16,7 +16,7 @@ const MEGA_MATRIX = {
         'mp3': { group: 'audio', videoCodecs: [], audioCodecs: ['libmp3lame'] },
         'm4a': { group: 'audio', videoCodecs: [], audioCodecs: ['aac', 'alac'] },
         'flac': { group: 'audio', videoCodecs: [], audioCodecs: ['flac'] },
-        'wav': { group: 'audio', videoCodecs: [], audioCodecs: ['pcm_s16le'] },
+        'wav': { group: 'audio', videoCodecs: [], audioCodecs: ['pcm_s16le', 'pcm_s24le', 'pcm_s32le', 'pcm_f32le'] },
         'ogg': { group: 'audio', videoCodecs: [], audioCodecs: ['libvorbis', 'libopus', 'flac'] },
         'wma': { group: 'audio', videoCodecs: [], audioCodecs: ['wmav2', 'wmav1'] },
         'ac3': { group: 'audio', videoCodecs: [], audioCodecs: ['ac3'] },
@@ -24,9 +24,9 @@ const MEGA_MATRIX = {
         'opus': { group: 'audio', videoCodecs: [], audioCodecs: ['libopus'] },
         'aiff': { group: 'audio', videoCodecs: [], audioCodecs: ['pcm_s16be'] },
         'amr': { group: 'audio', videoCodecs: [], audioCodecs: ['amr_nb', 'amr_wb'] },
-        'mka': { group: 'audio', videoCodecs: [], audioCodecs: ['flac', 'libvorbis', 'libopus', 'aac', 'libmp3lame'] },
+        'mka': { group: 'audio', videoCodecs: [], audioCodecs: ['flac', 'libvorbis', 'libopus', 'aac', 'libmp3lame', 'pcm_s24le', 'pcm_s16le'] },
 
-        'avi': { group: 'legacy', videoCodecs: ['mpeg4', 'libx264', 'mjpeg'], audioCodecs: ['libmp3lame', 'ac3', 'pcm_s16le'] },
+        'avi': { group: 'legacy', videoCodecs: ['mpeg4', 'libx264', 'mjpeg'], audioCodecs: ['libmp3lame', 'ac3', 'pcm_s16le', 'pcm_s24le'] },
         'wmv': { group: 'legacy', videoCodecs: ['wmv2', 'wmv1'], audioCodecs: ['wmav2', 'wmav1'] },
         'flv': { group: 'legacy', videoCodecs: ['flv1', 'libx264'], audioCodecs: ['libmp3lame', 'aac'] },
         'mpg': { group: 'legacy', videoCodecs: ['mpeg2video', 'mpeg1video'], audioCodecs: ['mp2', 'ac3'] },
@@ -39,7 +39,7 @@ const MEGA_MATRIX = {
         'ts': { group: 'pro', videoCodecs: ['libx264', 'libx265', 'mpeg2video'], audioCodecs: ['aac', 'ac3', 'mp2'] },
         'mts': { group: 'pro', videoCodecs: ['libx264', 'libx265', 'mpeg2video'], audioCodecs: ['ac3'] },
         'm2ts': { group: 'pro', videoCodecs: ['libx264', 'libx265', 'mpeg2video'], audioCodecs: ['ac3', 'pcm_s16le'] },
-        'mxf': { group: 'pro', videoCodecs: ['prores', 'dnxhd', 'mpeg2video', 'libx264'], audioCodecs: ['pcm_s16le'] }
+        'mxf': { group: 'pro', videoCodecs: ['prores', 'dnxhd', 'mpeg2video', 'libx264'], audioCodecs: ['pcm_s16le', 'pcm_s24le'] }
     },
 
     hardwareEmitters: {
@@ -66,17 +66,17 @@ const MEGA_MATRIX = {
     },
 
     videoCodecConstraints: {
-        'libx264':      { maxWidth: 4096, maxHeight: 2304, maxFps: 120, maxBitrate: 150000 },
-        'libx265':      { maxWidth: 8192, maxHeight: 4320, maxFps: 240, maxBitrate: 240000 },
-        'libaom-av1':   { maxWidth: 8192, maxHeight: 4320, maxFps: 240, maxBitrate: 240000 },
-        'libvpx-vp9':   { maxWidth: 8192, maxHeight: 4320, maxFps: 240, maxBitrate: 200000 },
-        'libvpx':       { maxWidth: 4096, maxHeight: 2160, maxFps: 120, maxBitrate: 100000 },
-        'mpeg4':        { maxWidth: 1920, maxHeight: 1080, maxFps: 60,  maxBitrate: 20000 },
-        'mpeg2video':   { maxWidth: 1920, maxHeight: 1080, maxFps: 60,  maxBitrate: 50000 },
+        'libx264':      { maxWidth: 4096, maxHeight: 2304, maxFps: 360, maxBitrate: 500000 },
+        'libx265':      { maxWidth: 8192, maxHeight: 4320, maxFps: 360, maxBitrate: 500000 },
+        'libaom-av1':   { maxWidth: 8192, maxHeight: 4320, maxFps: 360, maxBitrate: 500000 },
+        'libvpx-vp9':   { maxWidth: 8192, maxHeight: 4320, maxFps: 360, maxBitrate: 500000 },
+        'libvpx':       { maxWidth: 4096, maxHeight: 2160, maxFps: 240, maxBitrate: 200000 },
+        'mpeg4':        { maxWidth: 1920, maxHeight: 1080, maxFps: 120,  maxBitrate: 50000 },
+        'mpeg2video':   { maxWidth: 1920, maxHeight: 1080, maxFps: 120,  maxBitrate: 100000 },
         'mpeg1video':   { maxWidth: 1920, maxHeight: 1080, maxFps: 60,  maxBitrate: 20000 },
-        'prores':       { maxWidth: 8192, maxHeight: 4320, maxFps: 120, maxBitrate: 1000000 },
-        'dnxhd':        { maxWidth: 1920, maxHeight: 1080, maxFps: 60,  maxBitrate: 220000 },
-        'gif':          { maxWidth: 1920, maxHeight: 1080, maxFps: 50,  maxBitrate: 100000 },
+        'prores':       { maxWidth: 8192, maxHeight: 4320, maxFps: 360, maxBitrate: 1500000 },
+        'dnxhd':        { maxWidth: 1920, maxHeight: 1080, maxFps: 120,  maxBitrate: 500000 },
+        'gif':          { maxWidth: 1920, maxHeight: 1080, maxFps: 60,  maxBitrate: 100000 },
         'apng':         { maxWidth: 8192, maxHeight: 4320, maxFps: 60,  maxBitrate: 200000 },
         'libwebp':      { maxWidth: 16383, maxHeight: 16383, maxFps: 60, maxBitrate: 100000 },
         'libwebp_anim': { maxWidth: 16383, maxHeight: 16383, maxFps: 60, maxBitrate: 100000 },
@@ -90,13 +90,16 @@ const MEGA_MATRIX = {
     audioCodecConstraints: {
         'aac':         { maxChannels: 8,  sampleRates: [192000, 96000, 88200, 48000, 44100, 32000, 22050, 16000, 8000], maxBitrate: 1000 },
         'libmp3lame':  { maxChannels: 2,  sampleRates: [48000, 44100, 32000, 22050, 16000, 8000], maxBitrate: 320 },
-        'flac':        { maxChannels: 8,  sampleRates: [192000, 96000, 88200, 48000, 44100, 32000, 22050, 16000, 8000], lossless: true },
+        'flac':        { maxChannels: 8,  sampleRates: [384000, 192000, 96000, 88200, 48000, 44100, 32000, 22050, 16000, 8000], lossless: true },
         'libvorbis':   { maxChannels: 8,  sampleRates: [48000, 44100, 32000, 22050, 16000, 8000], maxBitrate: 500 },
         'libopus':     { maxChannels: 8,  sampleRates: [48000], maxBitrate: 512 },
-        'alac':        { maxChannels: 8,  sampleRates: [192000, 96000, 88200, 48000, 44100, 32000], lossless: true },
+        'alac':        { maxChannels: 8,  sampleRates: [384000, 192000, 96000, 88200, 48000, 44100, 32000], lossless: true },
         'ac3':         { maxChannels: 6,  sampleRates: [48000, 44100, 32000], maxBitrate: 640 },
         'eac3':        { maxChannels: 16, sampleRates: [48000, 44100, 32000], maxBitrate: 6144 },
         'pcm_s16le':   { maxChannels: 8,  sampleRates: [192000, 96000, 88200, 48000, 44100, 32000, 22050, 16000, 8000], lossless: true },
+        'pcm_s24le':   { maxChannels: 8,  sampleRates: [384000, 192000, 96000, 88200, 48000, 44100], lossless: true },
+        'pcm_s32le':   { maxChannels: 8,  sampleRates: [384000, 192000, 96000, 88200, 48000, 44100], lossless: true },
+        'pcm_f32le':   { maxChannels: 8,  sampleRates: [384000, 192000, 96000, 88200, 48000, 44100], lossless: true },
         'pcm_s16be':   { maxChannels: 8,  sampleRates: [192000, 96000, 88200, 48000, 44100, 32000, 22050, 16000, 8000], lossless: true },
         'wmav2':       { maxChannels: 2,  sampleRates: [48000, 44100, 22050], maxBitrate: 320 },
         'wmav1':       { maxChannels: 2,  sampleRates: [48000, 44100, 22050], maxBitrate: 320 },
@@ -104,7 +107,7 @@ const MEGA_MATRIX = {
         'amr_wb':      { maxChannels: 1,  sampleRates: [16000], maxBitrate: 24 },
         'mp2':         { maxChannels: 2,  sampleRates: [48000, 44100], maxBitrate: 384 },
         'dts':         { maxChannels: 6,  sampleRates: [48000, 44100], maxBitrate: 1536 },
-        'truehd':      { maxChannels: 8,  sampleRates: [96000, 48000], lossless: true }
+        'truehd':      { maxChannels: 8,  sampleRates: [192000, 96000, 48000], lossless: true }
     }
 };
 

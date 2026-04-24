@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Ungültiges Zeitformat. Bitte nur Zahlen und Satzzeichen (:,.) verwenden.",
   "settings.concurrentDownloads": "Limit für gleichzeitige Downloads",
   "settings.concurrentDesc": "Legt fest, wie viele Videos gleichzeitig heruntergeladen werden.",
-  "settings.concurrentWarning": "Warnung: Das gleichzeitige Herunterladen von mehr als 1 Video kann zu IP-Sperren (HTTP 429) auf Plattformen wie YouTube führen."
+  "settings.concurrentWarning": "Warnung: Das gleichzeitige Herunterladen von mehr als 1 Video kann zu IP-Sperren (HTTP 429) auf Plattformen wie YouTube führen.",
+  "updater": {
+    "devModeError": "Im Entwicklungsmodus kann nicht aktualisiert werden. Bitte kompilieren Sie die Anwendung."
+  }
 }

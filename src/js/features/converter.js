@@ -222,26 +222,8 @@ function setupUIBindings() {
             const customDiv = document.getElementById('convVolumeCustom');
             if (customDiv) customDiv.style.display = 'none';
           }
-          if (chDropdown) {
-            chDropdown.value = '2';
-            convState.channels = '2';
-            chDropdown.disabled = true;
-            chDropdown.title = t('conv.channelsLockedLoudnorm') || 'Channels locked to Stereo while Smart Equalizer is active.';
-            const customDiv = document.getElementById('convChannelsCustom');
-            if (customDiv) customDiv.style.display = 'none';
-          }
-          if (srDropdown) {
-            srDropdown.value = 'original';
-            convState.sampleRate = 'original';
-            srDropdown.disabled = true;
-            srDropdown.title = t('conv.srLockedLoudnorm') || 'Smart Equalizer locks to 48kHz sample rate.';
-            const customDiv = document.getElementById('convSampleRateCustom');
-            if (customDiv) customDiv.style.display = 'none';
-          }
         } else {
           if (volDropdown) { volDropdown.disabled = false; volDropdown.title = ''; }
-          if (chDropdown) { chDropdown.disabled = false; chDropdown.title = ''; }
-          if (srDropdown) { srDropdown.disabled = false; srDropdown.title = ''; }
         }
       }
 

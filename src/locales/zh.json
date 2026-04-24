@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "无效的时间格式。请仅使用数字和标点符号 (:,.)",
   "settings.concurrentDownloads": "并发下载限制",
   "settings.concurrentDesc": "设置同时下载多少个视频。",
-  "settings.concurrentWarning": "警告：同时下载超过1个视频可能会导致在YouTube等平台上被封禁IP（HTTP 429）。"
+  "settings.concurrentWarning": "警告：同时下载超过1个视频可能会导致在YouTube等平台上被封禁IP（HTTP 429）。",
+  "updater": {
+    "devModeError": "无法在开发模式下更新。请编译应用程序。"
+  }
 }

@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Geçersiz zaman formatı. Sadece rakam ve noktalama (:,.) kullanın.",
   "settings.concurrentDownloads": "Eşzamanlı İndirme Limiti",
   "settings.concurrentDesc": "Aynı anda kaç videonun indirileceğini belirler.",
-  "settings.concurrentWarning": "Uyarı: Eşzamanlı 1'den fazla video indirmek YouTube vb. platformlarda IP engellemesine (HTTP 429) yol açabilir."
+  "settings.concurrentWarning": "Uyarı: Eşzamanlı 1'den fazla video indirmek YouTube vb. platformlarda IP engellemesine (HTTP 429) yol açabilir.",
+  "updater": {
+    "devModeError": "Geliştirici modunda (dev mode) güncellenemez. Lütfen uygulamayı derleyin (build)."
+  }
 }

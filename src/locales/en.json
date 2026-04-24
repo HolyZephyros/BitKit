@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Invalid time format. Please use only numbers and punctuation (:,.)",
   "settings.concurrentDownloads": "Concurrent Downloads Limit",
   "settings.concurrentDesc": "Sets how many videos are downloaded simultaneously.",
-  "settings.concurrentWarning": "Warning: Downloading more than 1 video concurrently may result in IP bans (HTTP 429) on platforms like YouTube."
+  "settings.concurrentWarning": "Warning: Downloading more than 1 video concurrently may result in IP bans (HTTP 429) on platforms like YouTube.",
+  "updater": {
+    "devModeError": "Cannot update in development mode. Please build the application."
+  }
 }

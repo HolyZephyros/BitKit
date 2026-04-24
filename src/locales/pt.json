@@ -678,5 +678,8 @@
   "toast.invalidTimeFormat": "Formato de tempo inválido. Use apenas números e pontuação (:,.)",
   "settings.concurrentDownloads": "Limite de downloads simultâneos",
   "settings.concurrentDesc": "Define quantos vídeos são baixados simultaneamente.",
-  "settings.concurrentWarning": "Aviso: Baixar mais de 1 vídeo simultaneamente pode resultar em banimentos de IP (HTTP 429) em plataformas como o YouTube."
+  "settings.concurrentWarning": "Aviso: Baixar mais de 1 vídeo simultaneamente pode resultar em banimentos de IP (HTTP 429) em plataformas como o YouTube.",
+  "updater": {
+    "devModeError": "Não é possível atualizar no modo de desenvolvimento. Por favor, compile o aplicativo."
+  }
 }
