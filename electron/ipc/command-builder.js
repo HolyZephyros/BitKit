@@ -197,16 +197,18 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
           args.push('-c:a', 'copy');
         } else if (fmt === 'mp3') {
           args.push('-c:a', 'libmp3lame', '-b:a', '320k');
-        } else if (fmt === 'aac' || fmt === 'm4a') {
-          args.push('-c:a', 'aac', '-b:a', '256k');
+        } else if (fmt === 'aac') {
+          args.push('-c:a', 'aac', '-b:a', '320k');
+        } else if (fmt === 'm4a') {
+          args.push('-c:a', 'alac');
         } else if (fmt === 'wav') {
-          args.push('-c:a', 'pcm_s16le');
+          args.push('-c:a', 'pcm_s24le');
         } else if (fmt === 'flac') {
-          args.push('-c:a', 'flac', '-sample_fmt', 's16');
+          args.push('-c:a', 'flac', '-compression_level', '8');
         } else if (fmt === 'ogg') {
-          args.push('-c:a', 'libvorbis', '-b:a', '192k');
+          args.push('-c:a', 'libvorbis', '-q:a', '8');
         } else if (fmt === 'opus') {
-          args.push('-c:a', 'libopus', '-b:a', '128k');
+          args.push('-c:a', 'libopus', '-b:a', '192k', '-vbr', 'on');
         }
         break;
       case 'video_mute': {
@@ -216,7 +218,7 @@ async function buildFfmpegArgs(inputPath, outputPath, state, getBinPath) {
           args.push('-c:v', 'copy');
         } else {
           if (vfmt === 'avi') {
-            args.push('-c:v', 'mpeg4', '-vtag', 'xvid', '-q:v', '3');
+            args.push('-c:v', 'mpeg4', '-vtag', 'xvid', '-q:v', '2');
           } else if (vfmt === 'webm') {
             args.push('-c:v', 'libvpx-vp9', '-crf', '14', '-b:v', '0', '-row-mt', '1');
           } else {

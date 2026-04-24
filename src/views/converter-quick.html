@@ -49,60 +49,52 @@
   }
 
   /* Category Headers — Accordion */
+  .template-accordion {
+    background: rgba(0,0,0,0.15); 
+    border-radius: var(--radius-lg); 
+    margin-bottom: 1.5rem; 
+    border-left: 4px solid var(--accent-teal); 
+    transition: all 0.3s ease;
+  }
   .template-category {
-    font-weight: 700;
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
+    font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0;
-    padding: var(--space-md) 0;
+    font-weight: 800;
+    color: #ffffff;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     cursor: pointer;
     user-select: none;
-    transition: color 0.2s ease;
+    padding: 1.25rem;
   }
-  .template-category:hover {
-    color: var(--text-primary);
-  }
-  .template-category::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: var(--glass-border);
+  .template-category .cat-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .template-category .cat-chevron {
     transition: transform 0.3s ease;
-    flex-shrink: 0;
-    opacity: 0.5;
+    opacity: 0.8;
   }
   .template-accordion.collapsed .cat-chevron {
     transform: rotate(-90deg);
   }
-
-  .template-accordion {
-    margin-bottom: var(--space-sm);
-  }
-  .template-accordion:first-child .template-category {
-    padding-top: 0;
-  }
   .template-accordion .template-grid {
     max-height: 5000px;
     overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease, padding 0.3s ease;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
     opacity: 1;
-    padding: 4px;
-    margin: -4px;
-    margin-bottom: calc(var(--space-md) - 4px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 1.25rem;
   }
   .template-accordion.collapsed .template-grid {
     max-height: 0;
     opacity: 0;
-    margin-bottom: 0;
     padding-top: 0;
     padding-bottom: 0;
+    border-top-color: transparent;
   }
 
   /* Dynamic Params Area */
@@ -152,7 +144,7 @@
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--radius-md);
     padding: 10px 14px;
-    margin-bottom: var(--space-md);
+    margin: 0 1.25rem 1.25rem 1.25rem;
     font-size: var(--text-sm);
     color: #ffffff;
     font-weight: 600;
@@ -166,10 +158,13 @@
 
 <div id="quickTemplatesContainer">
   <!-- Dönüşüm & Çıktı Araçları -->
-  <div class="template-accordion">
-  <div class="template-category" onclick="this.parentElement.classList.toggle('collapsed')">
-    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14" height="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    <span data-i18n="quick.catConversion">DÖNÜŞÜM & ÇIKTI ARAÇLARI</span>
+  <div class="template-accordion" data-accordion-id="quick-conversion">
+  <div class="template-category">
+    <div class="cat-title">
+      <svg fill="none" height="18" stroke="var(--accent-teal)" stroke-width="2" viewBox="0 0 24 24" width="18"><rect height="20" rx="2.18" ry="2.18" width="20" x="2" y="2"></rect><line x1="7" x2="7" y1="2" y2="22"></line><line x1="17" x2="17" y1="2" y2="22"></line><line x1="2" x2="22" y1="12" y2="12"></line><line x1="2" x2="7" y1="7" y2="7"></line><line x1="2" x2="7" y1="17" y2="17"></line><line x1="17" x2="22" y1="17" y2="17"></line><line x1="17" x2="22" y1="7" y2="7"></line></svg>
+      <span data-i18n="quick.catConversion">DÖNÜŞÜM & ÇIKTI ARAÇLARI</span>
+    </div>
+    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
   </div>
   <div class="template-grid">
     <!-- Format Dönüştürücü -->
@@ -351,18 +346,18 @@
               Orijinal (Kopyala - MKA)
             </option>
             <option value="mp3" data-i18n="quick.fmtMp3">MP3 (320kbps)</option>
-            <option value="aac" data-i18n="quick.fmtAac">AAC (256kbps)</option>
+            <option value="aac" data-i18n="quick.fmtAac">AAC (320kbps)</option>
             <option value="wav" data-i18n="quick.fmtWav">
-              WAV (Kayıpsız / PCM)
+              WAV (Kayıpsız / 24-bit PCM)
             </option>
             <option value="flac" data-i18n="quick.fmtFlac">
-              FLAC (Kayıpsız)
+              FLAC (Kayıpsız / Seviye 8)
             </option>
             <option value="m4a" data-i18n="quick.fmtM4a">
-              M4A (Apple ALAC/AAC)
+              M4A (Apple ALAC Kayıpsız)
             </option>
-            <option value="ogg" data-i18n="quick.fmtOgg">OGG (Vorbis)</option>
-            <option value="opus" data-i18n="quick.fmtOpus">Opus (128kbps)</option>
+            <option value="ogg" data-i18n="quick.fmtOgg">OGG (Vorbis q:8)</option>
+            <option value="opus" data-i18n="quick.fmtOpus">Opus (192kbps)</option>
           </select>
         </div>
       </div>
@@ -538,10 +533,13 @@
   </div>
 
   <!-- Video Düzenleme & Efektler -->
-  <div class="template-accordion">
-  <div class="template-category" onclick="this.parentElement.classList.toggle('collapsed')">
-    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14" height="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    <span data-i18n="quick.catEditing">VİDEO DÜZENLEME & EFEKTLER</span>
+  <div class="template-accordion" data-accordion-id="quick-editing">
+  <div class="template-category">
+    <div class="cat-title">
+      <svg fill="none" height="18" stroke="var(--accent-teal)" stroke-width="2" viewBox="0 0 24 24" width="18"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      <span data-i18n="quick.catEditing">VİDEO DÜZENLEME & EFEKTLER</span>
+    </div>
+    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
   </div>
   <div class="multi-filter-info" id="multiFilterInfo">
     <svg style="color: #60a5fa; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -1108,10 +1106,13 @@
   </div>
 
   <!-- Sosyal Medya -->
-  <div class="template-accordion">
-  <div class="template-category" onclick="this.parentElement.classList.toggle('collapsed')">
-    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="14" height="14"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    <span data-i18n="quick.catSocial">SOSYAL MEDYA & PLATFORMLAR</span>
+  <div class="template-accordion" data-accordion-id="quick-social">
+  <div class="template-category">
+    <div class="cat-title">
+      <svg fill="none" height="18" stroke="var(--accent-teal)" stroke-width="2" viewBox="0 0 24 24" width="18"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+      <span data-i18n="quick.catSocial">SOSYAL MEDYA & PLATFORMLAR</span>
+    </div>
+    <svg class="cat-chevron" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><polyline points="6 9 12 15 18 9"></polyline></svg>
   </div>
   <div class="template-grid">
     <!-- TikTok -->

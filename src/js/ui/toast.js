@@ -27,7 +27,7 @@ function showToast(message, type = 'info', duration = 4000) {
 
   const messageSpan = document.createElement('span');
   messageSpan.className = 'toast-message';
-  messageSpan.innerHTML = message;
+  setSafeHtml(messageSpan, message);
 
   const closeBtn = document.createElement('button');
   closeBtn.className = 'toast-close';

@@ -5,6 +5,8 @@ function setupQuickTemplates() {
   const container = document.getElementById('quickTemplatesContainer');
   if (!container) return;
 
+  setupAccordionPersistence();
+
   const cards = container.querySelectorAll('.template-card');
   const btnConvert = document.getElementById('btnQuickConvert');
   const multiInfo = document.getElementById('multiFilterInfo');
@@ -241,6 +243,27 @@ function setupParamPills() {
             b.classList.add('active-pill');
           }
         });
+      });
+    }
+  });
+}
+
+function setupAccordionPersistence() {
+  const accordions = document.querySelectorAll('.template-accordion[data-accordion-id]');
+  accordions.forEach(acc => {
+    const id = acc.getAttribute('data-accordion-id');
+    const isCollapsed = localStorage.getItem(`accordion_state_${id}`) === 'true';
+    if (isCollapsed) {
+      acc.classList.add('collapsed');
+    } else {
+      acc.classList.remove('collapsed');
+    }
+
+    const categoryHeader = acc.querySelector('.template-category');
+    if (categoryHeader) {
+      categoryHeader.addEventListener('click', () => {
+        const isNowCollapsed = acc.classList.toggle('collapsed');
+        localStorage.setItem(`accordion_state_${id}`, isNowCollapsed);
       });
     }
   });

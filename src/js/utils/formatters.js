@@ -57,3 +57,13 @@ function getPlatformName(extractor) {
   }
   return extractor || (typeof t === 'function' ? t('dl.unknownPlatform') : 'Unknown');
 }
+
+function setSafeHtml(element, htmlString) {
+  if (!element) return;
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlString, 'text/html');
+  element.innerHTML = '';
+  while (doc.body.firstChild) {
+    element.appendChild(doc.body.firstChild);
+  }
+}

@@ -6,17 +6,17 @@ async function loadHistory() {
   const container = document.getElementById('historyList');
 
   if (history.length === 0) {
-    container.innerHTML = `
+    setSafeHtml(container, `
       <div class="empty-state">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
         <div class="empty-state-title">${t('history.emptyTitle')}</div>
         <div class="empty-state-text">${t('history.emptyDesc')}</div>
       </div>
-    `;
+    `);
     return;
   }
 
-  container.innerHTML = history.map((item) => {
+  setSafeHtml(container, history.map((item) => {
     return `
     <div class="card hover-lift" style="margin-bottom:var(--space-sm);cursor:pointer" data-open-path="${encodeURIComponent(item.outputPath || '')}">
       <div class="flex-between">
@@ -27,7 +27,7 @@ async function loadHistory() {
         <span class="tag ${item.type === 'download' ? 'tag-teal' : 'tag-bordo'}">${item.type === 'download' ? t('nav.downloader') : t('nav.converter')}</span>
       </div>
     </div>
-  `}).join('');
+  `}).join(''));
 
   container.querySelectorAll('[data-open-path]').forEach(el => {
     el.addEventListener('click', () => {

@@ -66,7 +66,7 @@ function initDownloader() {
   };
 
   const renderBatchPills = () => {
-    batchLinkList.innerHTML = '';
+    batchLinkList.textContent = '';
     batchUrls.forEach((url, index) => {
       const pill = document.createElement('div');
       pill.className = 'batch-pill';
@@ -78,7 +78,7 @@ function initDownloader() {
 
       const removeBtn = document.createElement('button');
       removeBtn.style.cssText = 'background:none; border:none; color:var(--accent-bordo); cursor:pointer; padding:0; display:flex;';
-      removeBtn.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"></path></svg>';
+      setSafeHtml(removeBtn, '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"></path></svg>');
       removeBtn.onclick = () => {
         batchUrls.splice(index, 1);
         renderBatchPills();
@@ -660,7 +660,7 @@ function populateFormatList(containerId, formats, type) {
   if (!container) return;
 
   const defaults = container.querySelectorAll('[data-format-id="best-video"], [data-format-id="best-audio"], [data-format-id="none"]');
-  container.innerHTML = '';
+  container.textContent = '';
 
   defaults.forEach(el => {
     el.classList.add('selected');
@@ -697,19 +697,19 @@ function populateFormatList(containerId, formats, type) {
 
     if (type === 'video') {
       const codec = (f.vcodec || '').split('.')[0];
-      detail.innerHTML = `
+      setSafeHtml(detail, `
         <span class="format-tag tag-ext" style="color:var(--text-primary);font-weight:600">${(f.ext || 'video').toUpperCase()}</span>
         <span class="format-tag tag-codec">${codec}</span>
         ${f.fps ? `<span class="format-tag">${f.fps}fps</span>` : ''}
         ${f.tbr ? `<span class="format-tag">${Math.round(f.tbr)}kbps</span>` : ''}
         ${f.filesize ? `<span class="format-tag tag-size">${formatFilesize(f.filesize)}</span>` : ''}
-      `;
+      `);
     } else {
-      detail.innerHTML = `
+      setSafeHtml(detail, `
         ${f.abr ? `<span class="format-tag">${Math.round(f.abr)}kbps</span>` : ''}
         ${f.filesize ? `<span class="format-tag tag-size">${formatFilesize(f.filesize)}</span>` : ''}
         <span class="format-tag">${f.ext || ''}</span>
-      `;
+      `);
     }
 
     item.appendChild(radio);
@@ -1047,7 +1047,7 @@ function onDownloadComplete(data) {
     const percentEl = el.querySelector('[data-field="percent"]');
     const cancelBtn = el.querySelector('.btn-icon');
 
-    if (speedEl) speedEl.innerHTML = '<span style="color:var(--success)">' + t('dl.completed') + '</span>';
+    if (speedEl) setSafeHtml(speedEl, '<span style="color:var(--success)">' + t('dl.completed') + '</span>');
     if (etaEl) etaEl.textContent = '';
     if (totalEl) totalEl.textContent = '';
     if (barEl) { barEl.style.width = '100%'; barEl.className = 'progress-fill progress-fill-complete'; }
@@ -1171,7 +1171,7 @@ function renderDownloadQueue() {
       const el = document.createElement('div');
       el.className = 'download-item download-item-enter';
       el.id = `dl-${dl.id}`;
-      el.innerHTML = `
+      setSafeHtml(el, `
         <div class="download-item-info">
           <div class="download-item-name">${escapeHtml(truncate(dl.title, 60))}</div>
           <div class="download-item-status">
@@ -1191,7 +1191,7 @@ function renderDownloadQueue() {
         <button class="btn-icon btn-cancel-dl" data-dl-id="${dl.id}" data-tooltip="${t('dl.cancel')}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
-      `;
+      `);
 
       el.querySelector('.btn-cancel-dl')?.addEventListener('click', () => cancelDownload(dl.id));
       container.appendChild(el);
@@ -1217,7 +1217,7 @@ function updateDownloadItemDOM(id) {
 
     el.classList.add('download-item-connecting');
     el.classList.remove('download-item-postprocessing', 'download-item-cutting');
-    if (speedEl) speedEl.innerHTML = '<span class="postprocess-label">🔗 ' + t('dl.connecting') + '</span>';
+    if (speedEl) setSafeHtml(speedEl, '<span class="postprocess-label">🔗 ' + t('dl.connecting') + '</span>');
     if (etaLabelEl) etaLabelEl.textContent = '';
     if (etaEl) etaEl.textContent = '';
     if (totalEl) totalEl.textContent = '';
@@ -1239,7 +1239,7 @@ function updateDownloadItemDOM(id) {
         if (etaField) etaField.textContent = timeStr;
       }, 1000);
     }
-    if (speedEl) speedEl.innerHTML = '<span class="postprocess-label">✂️ ' + t('dl.cutting') + '</span>';
+    if (speedEl) setSafeHtml(speedEl, '<span class="postprocess-label">✂️ ' + t('dl.cutting') + '</span>');
     if (etaLabelEl) etaLabelEl.textContent = t('dl.elapsed');
     if (etaEl) etaEl.textContent = '0s';
     if (totalEl) totalEl.textContent = '';
@@ -1251,7 +1251,7 @@ function updateDownloadItemDOM(id) {
 
     if (dl._cuttingTimerId) { clearInterval(dl._cuttingTimerId); dl._cuttingTimerId = null; }
     const speedText = dl.speed ? ` — ${dl.speed}` : '';
-    if (speedEl) speedEl.innerHTML = '<span class="postprocess-label">⚙️ ' + t('dl.postprocessing') + speedText + '</span>';
+    if (speedEl) setSafeHtml(speedEl, '<span class="postprocess-label">⚙️ ' + t('dl.postprocessing') + speedText + '</span>');
     if (etaLabelEl) etaLabelEl.textContent = '';
     if (etaEl) etaEl.textContent = '';
     if (totalEl) totalEl.textContent = dl.totalSize || '';
@@ -1361,6 +1361,7 @@ function startQueuedItem(index) {
   renderPendingQueue();
 
   item.options.outputPath = state.settings.downloadPath;
+  item.options.cookiesPath = state.settings.cookiesPath || undefined;
   window.bitkit.download.start(item.url, item.options).then(result => {
     if (result.success) {
       state.downloads.set(result.id, {
@@ -1395,7 +1396,7 @@ function renderPendingQueue() {
   section.style.display = 'block';
   const countEl = document.getElementById('pendingQueueCount');
   if (countEl) countEl.innerText = `(${state.pendingQueue.length})`;
-  list.innerHTML = state.pendingQueue.map((item, i) => {
+  setSafeHtml(list, state.pendingQueue.map((item, i) => {
     const modeLabel = item.mode === 'audio' ? '🎵 ' + t('dl.modeAudio') : '🎬 ' + t('dl.modeVideo');
     let qualStr = item.options.quality;
     if (qualStr === 'best' || qualStr === 'audio') qualStr = t('dl.qualityBest') + ` (${t('dl.autoExt')})`;
@@ -1420,14 +1421,18 @@ function renderPendingQueue() {
         </div>
       </div>
     `;
-  }).join('');
+  }).join(''));
 }
+
+let activeQueueCount = 0;
 
 function processNextInQueue() {
   if (!state.queueProcessingActive) return;
   const maxDownloads = state.settings.maxConcurrentDownloads || 1;
-  if (state.downloads.size >= maxDownloads || state.pendingQueue.length === 0) {
-    if (state.pendingQueue.length === 0) state.queueProcessingActive = false;
+  const effectiveActive = state.downloads.size + activeQueueCount;
+
+  if (effectiveActive >= maxDownloads || state.pendingQueue.length === 0) {
+    if (state.pendingQueue.length === 0 && effectiveActive === 0) state.queueProcessingActive = false;
     return;
   }
 
@@ -1435,7 +1440,12 @@ function processNextInQueue() {
   renderPendingQueue();
 
   item.options.outputPath = state.settings.downloadPath;
+  item.options.cookiesPath = state.settings.cookiesPath || undefined;
+  
+  activeQueueCount++;
+
   window.bitkit.download.start(item.url, item.options).then(result => {
+    activeQueueCount--;
     if (result.success) {
       state.downloads.set(result.id, {
         id: result.id,
@@ -1460,6 +1470,7 @@ function processNextInQueue() {
       }
     }
   }).catch(err => {
+    activeQueueCount--;
     showToast(t('toast.downloadErrorTitle', {title: truncate(item.title, 30), error: err.message}), 'error');
     processNextInQueue();
   });
@@ -1513,11 +1524,11 @@ function showPlaylistPanel(playlist) {
 function renderPlaylistItems() {
   const container = document.getElementById('playlistVideoList');
   if (!state.playlistEntries || state.playlistEntries.length === 0) {
-    container.innerHTML = `<div class="playlist-empty-search">${t('dl.playlistEmpty')}</div>`;
+    setSafeHtml(container, `<div class="playlist-empty-search">${t('dl.playlistEmpty')}</div>`);
     return;
   }
 
-  container.innerHTML = state.playlistEntries.map((entry, i) => {
+  setSafeHtml(container, state.playlistEntries.map((entry, i) => {
     const isSelected = state.playlistSelected.has(i);
     const duration = entry.duration ? formatDuration(entry.duration) : '';
     const thumbUrl = entry.thumbnail || '';
@@ -1535,7 +1546,7 @@ function renderPlaylistItems() {
         ${duration ? `<span class="playlist-video-duration">${duration}</span>` : ''}
       </div>
     `;
-  }).join('');
+  }).join(''));
 
   container.querySelectorAll('.playlist-video-item').forEach(el => {
     el.addEventListener('click', () => {
@@ -1591,7 +1602,7 @@ function updatePlaylistSelectionInfo() {
     btnQueue.disabled = (total > 0 && selected === 0);
     const addStr = t('dl.addSelected') || 'Add Selected to Queue';
     if (total > 0) {
-      btnQueueText.innerHTML = `<strong>${selected}</strong> ` + addStr;
+      setSafeHtml(btnQueueText, `<strong>${selected}</strong> ` + addStr);
       if (selected > 0) {
         btnQueue.style.color = '#fff';
         btnQueue.style.textShadow = '';
@@ -1600,7 +1611,7 @@ function updatePlaylistSelectionInfo() {
         btnQueue.style.textShadow = '';
       }
     } else {
-      btnQueueText.innerHTML = t('dl.addToQueue');
+      btnQueueText.textContent = t('dl.addToQueue');
       btnQueue.style.color = '';
       btnQueue.style.textShadow = '';
     }
@@ -1611,9 +1622,9 @@ function updatePlaylistSelectionInfo() {
     const isAudio = state.downloadMode === 'audio';
     const dlStr = isAudio ? t('dl.downloadAudio') : t('dl.downloadVideo');
     if (total > 0) {
-      btnDownloadText.innerHTML = `<strong>${selected}</strong> ` + t('dl.downloadSelected');
+      setSafeHtml(btnDownloadText, `<strong>${selected}</strong> ` + t('dl.downloadSelected'));
     } else {
-      btnDownloadText.innerHTML = dlStr;
+      btnDownloadText.textContent = dlStr;
     }
   }
 }
