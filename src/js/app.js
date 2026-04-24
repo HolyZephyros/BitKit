@@ -2,13 +2,15 @@
 async function loadViews() {
   const views = ['downloader', 'converter', 'editor', 'history', 'settings'];
   const mainContent = document.getElementById('mainContent');
+  const parser = new DOMParser();
 
   for (const view of views) {
     try {
       const response = await fetch(`views/${view}.html`);
       if (response.ok) {
         const html = await response.text();
-        mainContent.insertAdjacentHTML('beforeend', html);
+        const doc = parser.parseFromString(html, 'text/html');
+        mainContent.append(...Array.from(doc.body.childNodes));
       }
     } catch (e) {
       console.error(`[BitKit] Failed to load view: ${view}`, e);
@@ -21,7 +23,8 @@ async function loadViews() {
       const htmlQuick = await resQuick.text();
       const containerQuick = document.getElementById('tabQuickTemplates');
       if (containerQuick) {
-        containerQuick.innerHTML = htmlQuick;
+        const docQuick = parser.parseFromString(htmlQuick, 'text/html');
+        containerQuick.replaceChildren(...Array.from(docQuick.body.childNodes));
         if (window.applyTranslations) window.applyTranslations();
         if (window.initQuickTemplates) window.initQuickTemplates();
       }
