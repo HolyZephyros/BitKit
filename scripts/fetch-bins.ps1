@@ -20,7 +20,8 @@ $ytdlpDest = Join-Path $binFolder "yt-dlp.exe"
 
 if ((Test-Path $ytdlpDest) -and ($currentVersions."yt-dlp" -eq $ytdlpVersion)) {
     Write-Host "yt-dlp is already up to date ($ytdlpVersion). Skipping." -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "Downloading yt-dlp ($ytdlpVersion)..." -ForegroundColor Yellow
     $ytdlpUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
     Invoke-WebRequest -Uri $ytdlpUrl -OutFile $ytdlpDest -UseBasicParsing
@@ -31,11 +32,10 @@ if ((Test-Path $ytdlpDest) -and ($currentVersions."yt-dlp" -eq $ytdlpVersion)) {
 Write-Host "Checking FFmpeg..." -ForegroundColor Cyan
 $ffmpegDest = Join-Path $binFolder "ffmpeg.exe"
 
-# If ffmpeg already exists and is registered in versions.json, skip downloading
-# We don't need to fetch nightly builds on every npm run build.
 if ((Test-Path $ffmpegDest) -and $currentVersions."ffmpeg") {
     Write-Host "FFmpeg is already installed. Skipping download to save time." -ForegroundColor Green
-} else {
+}
+else {
     $api = Invoke-RestMethod -Uri "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/latest"
     $ffmpegVersion = $api.published_at
     Write-Host "Downloading FFmpeg ($ffmpegVersion)..." -ForegroundColor Yellow
