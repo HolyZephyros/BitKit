@@ -277,7 +277,7 @@ app.whenReady().then(async () => {
   if (ytdlp && ytdlp !== 'yt-dlp.exe') {
     const { execFile } = require('child_process');
     global.ytdlpUpdating = true;
-    execFile(ytdlp, ['-U'], { timeout: 30000 }, () => {
+    execFile(ytdlp, ['-U'], { timeout: 30000, cwd: path.dirname(ytdlp) }, () => {
       global.ytdlpUpdating = false;
     });
   }
