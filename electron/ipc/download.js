@@ -30,7 +30,7 @@ function register(ipcMain, getBinPath) {
       let stdout = '';
       let stderr = '';
 
-      const proc = spawn(ytdlp, args);
+      const proc = spawn(ytdlp, args, { cwd: path.dirname(ytdlp) });
 
       proc.stdout.on('data', (data) => { stdout += data.toString(); });
       proc.stderr.on('data', (data) => { stderr += data.toString(); });
@@ -315,7 +315,7 @@ function register(ipcMain, getBinPath) {
     args.push('--', url);
 
     console.log('[BitKit:Download]', { id, args: args.join(' ') });
-    const proc = spawn(ytdlp, args);
+    const proc = spawn(ytdlp, args, { cwd: path.dirname(ytdlp) });
     activeDownloads.set(id, { proc, url, options, args, startTime: Date.now(), knownFiles: new Set() });
 
     let lastOutput = '';

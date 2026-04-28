@@ -29,12 +29,15 @@ if ((Test-Path $ytdlpDest) -and ($currentVersions."yt-dlp" -eq $ytdlpVersion)) {
 }
 
 Write-Host "Checking FFmpeg..." -ForegroundColor Cyan
-$api = Invoke-RestMethod -Uri "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/latest"
-$ffmpegVersion = $api.published_at
+# Pin FFmpeg to a specific stable release to avoid downloading nightly builds on every build.
+# Bump this tag manually when a new major FFmpeg version is released.
+$ffmpegPinnedTag = "autobuild-2026-04-21-14-18"
+$api = Invoke-RestMethod -Uri "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/tags/$ffmpegPinnedTag"
+$ffmpegVersion = $api.tag_name
 $ffmpegDest = Join-Path $binFolder "ffmpeg.exe"
 
 if ((Test-Path $ffmpegDest) -and ($currentVersions."ffmpeg" -eq $ffmpegVersion)) {
-    Write-Host "FFmpeg is already up to date. Skipping." -ForegroundColor Green
+    Write-Host "FFmpeg is already up to date ($ffmpegVersion). Skipping." -ForegroundColor Green
 } else {
     Write-Host "Downloading FFmpeg ($ffmpegVersion)..." -ForegroundColor Yellow
     $asset = $api.assets | Where-Object { $_.name -like '*win64-gpl.zip' } | Select-Object -First 1
