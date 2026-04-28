@@ -10,7 +10,7 @@ function register(ipcMain, getBinPath) {
   ipcMain.handle('download:analyze', async (event, url, cookiesPath) => {
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
-    const args = ['--dump-json', '--no-download'];
+    const args = ['--ignore-config', '--dump-json', '--no-download'];
 
     const isPlaylistUrl = url.match(/[?&]list=/) || url.includes('/playlist');
 
@@ -155,7 +155,7 @@ function register(ipcMain, getBinPath) {
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
     const id = crypto.randomUUID();
-    const args = ['--windows-filenames'];
+    const args = ['--ignore-config', '--windows-filenames'];
 
     const outputPath = options.outputPath || require('electron').app.getPath('downloads');
     let template = options.filenameTemplate || '%(title)s.%(ext)s';

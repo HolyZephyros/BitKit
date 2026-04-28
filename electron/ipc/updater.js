@@ -172,7 +172,7 @@ function register(ipcMain, getBinPath, app) {
       global.ytdlpUpdating = true;
 
       return await new Promise((resolve) => {
-        execFile(ytdlp, ['--update'], { timeout: 120000, cwd: path.dirname(ytdlp) }, (error, stdout, stderr) => {
+        execFile(ytdlp, ['--update', '--ignore-config'], { timeout: 120000, cwd: path.dirname(ytdlp) }, (error, stdout, stderr) => {
           global.ytdlpUpdating = false;
 
           if (error) {
@@ -253,7 +253,7 @@ try {
 
 function getYtdlpVersion(binPath) {
   return new Promise((resolve) => {
-    execFile(binPath, ['--version'], { cwd: path.dirname(binPath) }, (error, stdout) => {
+    execFile(binPath, ['--version', '--ignore-config'], { cwd: path.dirname(binPath) }, (error, stdout) => {
       resolve(error ? null : stdout.trim());
     });
   });
