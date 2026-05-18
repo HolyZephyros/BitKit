@@ -1058,7 +1058,9 @@ function setupDragAndDrop() {
       try {
         const result = await window.bitkit.file.selectFiles({
           title: t('conv.selectMediaFiles') || 'Select Media Files',
-          filters: [{ name: t('conv.mediaFilter') || 'Media', extensions: ['mp4','mkv','avi','mov','webm','flv','wmv','mp3','m4a','flac','wav','ogg','aac'] }]
+          filters: [
+            { name: t('dialog.allFiles') || 'All Files', extensions: ['*'] }
+          ]
         });
         if (result && !result.canceled && result.paths && result.paths.length > 0) {
           document.getElementById('convSettingsPanel').style.display = 'block';
