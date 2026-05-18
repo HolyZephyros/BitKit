@@ -1379,33 +1379,56 @@ if (window.bitkit?.convert?.onProgress) {
   });
 }
 
-if (window.bitkit?.convert?.onComplete) {
-  window.bitkit.convert.onComplete((data) => {
-    if (!data || !data.id) return;
-    if (activeConversions.has(data.id)) {
-      const existing = activeConversions.get(data.id);
-      activeConversions.set(data.id, { ...existing, ...data, status: 'done', progress: 100 });
-      updateConvertQueueUI();
+function onConverterComplete(data) {
+  if (!data || !data.id) return;
+  if (!activeConversions.has(data.id)) {
+    setTimeout(() => {
+      onConverterComplete(data);
+    }, 250);
+    return;
+  }
+  
+  const existing = activeConversions.get(data.id);
+  activeConversions.set(data.id, { ...existing, ...data, status: 'done', progress: 100 });
+  updateConvertQueueUI();
 
-      if (window.bitkit?.history?.add) {
-        const filename = existing.input ? existing.input.split(/[\\/]/).pop() : `Task ${data.id}`;
-        window.bitkit.history.add({
-          title: filename,
-          url: existing.input || '',
-          outputPath: data.outputPath || existing.output || '',
-          type: 'convert'
-        });
-        if (state.currentPage === 'history' && typeof loadHistory === 'function') {
-          loadHistory();
-        }
-      }
-
-      setTimeout(() => {
-        activeConversions.delete(data.id);
-        updateConvertQueueUI();
-      }, 3000);
+  if (window.bitkit?.history?.add) {
+    let filename = existing.input ? existing.input.split(/[\\/]/).pop() : `Task ${data.id}`;
+    // Uzantıyı kaldır (.mp4, .m4a vb.) ki indirme geçmişiyle aynı temizlikte görünsün
+    if (filename.lastIndexOf('.') > 0) {
+      filename = filename.substring(0, filename.lastIndexOf('.'));
     }
-  });
+    let actionLabel = '';
+    let actionParam = '';
+    if (existing.template) {
+      const templates = { smart_convert: 'smartTitle', video_mute: 'muteTitle', audio_only: 'audioTitle', max_compression: 'maxCompTitle', gif: 'gifTitle', webp_anim: 'webpTitle', thumbnail: 'thumbnailTitle', webm: 'webmTitle', discord_nitro: 'nitroTitle', discord_basic: 'basicTitle', whatsapp: 'whatsappTitle', trim: 'trimTitle', timelapse: 'timelapseTitle', slowmo: 'slowmoTitle' };
+      actionLabel = templates[existing.template] ? `quick.${templates[existing.template]}` : '';
+    } else if (existing.vcodec || existing.acodec) {
+      actionLabel = `history.convertTo`;
+      actionParam = existing.format?.toUpperCase() || 'Custom';
+    }
+
+    window.bitkit.history.add({
+      title: filename,
+      url: existing.input || '',
+      outputPath: data.outputPath || existing.output || '',
+      type: 'convert',
+      actionLabel: actionLabel,
+      actionParam: actionParam
+    });
+    if (state.currentPage === 'history' && typeof loadHistory === 'function') {
+      loadHistory();
+    }
+  }
+
+  setTimeout(() => {
+    activeConversions.delete(data.id);
+    updateConvertQueueUI();
+  }, 3000);
+}
+
+if (window.bitkit?.convert?.onComplete) {
+  window.bitkit.convert.onComplete(onConverterComplete);
 }
 
 if (window.bitkit?.convert?.onError) {

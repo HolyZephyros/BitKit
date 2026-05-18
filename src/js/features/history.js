@@ -20,11 +20,27 @@ async function loadHistory() {
     return `
     <div class="card hover-lift" style="margin-bottom:var(--space-sm);cursor:pointer" data-open-path="${encodeURIComponent(item.outputPath || '')}">
       <div class="flex-between">
-        <div>
-          <div class="text-md" style="font-weight:500">${escapeHtml(truncate(item.title, 60))}</div>
-          <div class="text-xs text-muted font-mono mt-sm">${formatDate(item.timestamp)}</div>
+        <div style="flex:1; min-width:0; margin-right:16px;">
+          <div class="text-md" style="font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${escapeHtml(item.title)}">${escapeHtml(item.title)}</div>
+          <div class="text-sm font-mono mt-sm" style="display:flex; align-items:center; gap:10px;">
+            <span style="color:var(--text-primary); opacity:0.8; font-weight:500;">${formatDate(item.timestamp)}</span>
+            ${item.actionLabel ? (() => {
+              const translatedLabel = t(item.actionLabel);
+              let paramText = item.actionParam;
+              if (paramText === 'best' || paramText === 'best-video' || paramText === 'best-audio') paramText = t('history.best');
+              const fullText = paramText ? translatedLabel + ' • ' + paramText : translatedLabel;
+              
+              const isVideo = item.actionLabel && item.actionLabel.toLowerCase().includes('video');
+              const badgeColor = isVideo ? 'var(--accent-bordo)' : 'var(--accent-teal)';
+              const bgColor = isVideo ? 'rgba(230, 57, 70, 0.15)' : 'rgba(42, 157, 143, 0.15)';
+              
+              return '<span style="color:' + badgeColor + '; background:' + bgColor + '; font-weight:600; padding:4px 10px; border-radius:6px; max-width:250px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="' + escapeHtml(fullText) + '">' + escapeHtml(fullText) + '</span>';
+            })() : ''}
+          </div>
         </div>
-        <span class="tag ${item.type === 'download' ? 'tag-teal' : 'tag-bordo'}">${item.type === 'download' ? t('nav.downloader') : t('nav.converter')}</span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0;">
+          <span class="tag ${item.type === 'download' ? 'tag-teal' : 'tag-bordo'}">${item.type === 'download' ? t('history.type.download') : t('history.type.convert')}</span>
+        </div>
       </div>
     </div>
   `}).join(''));

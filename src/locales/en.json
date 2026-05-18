@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Warning: Downloading more than 1 video concurrently may result in IP bans (HTTP 429) on platforms like YouTube.",
   "updater": {
     "devModeError": "Cannot update in development mode. Please build the application."
-  }
+  },
+  "history.videoDl": "Video",
+  "history.audioDl": "Audio",
+  "history.convertTo": "Convert to",
+  "history.best": "Best",
+  "history.type.download": "Download",
+  "history.type.convert": "Conversion"
 }

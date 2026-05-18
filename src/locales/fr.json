@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Avertissement : Le téléchargement simultané de plus d'une vidéo peut entraîner des blocages d'IP (HTTP 429) sur des plateformes comme YouTube.",
   "updater": {
     "devModeError": "Impossible de mettre à jour en mode développement. Veuillez compiler l'application."
-  }
+  },
+  "history.videoDl": "Vidéo",
+  "history.audioDl": "Audio",
+  "history.convertTo": "Convertir en",
+  "history.best": "Meilleur",
+  "history.type.download": "Téléchargement",
+  "history.type.convert": "Conversion"
 }

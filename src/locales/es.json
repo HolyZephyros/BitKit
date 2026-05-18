@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Advertencia: Descargar más de 1 video simultáneamente puede resultar en baneos de IP (HTTP 429) en plataformas como YouTube.",
   "updater": {
     "devModeError": "No se puede actualizar en modo de desarrollo. Por favor, compile la aplicación."
-  }
+  },
+  "history.videoDl": "Video",
+  "history.audioDl": "Audio",
+  "history.convertTo": "Convertir a",
+  "history.best": "Mejor",
+  "history.type.download": "Descarga",
+  "history.type.convert": "Conversión"
 }

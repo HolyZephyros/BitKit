@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Aviso: Baixar mais de 1 vídeo simultaneamente pode resultar em banimentos de IP (HTTP 429) em plataformas como o YouTube.",
   "updater": {
     "devModeError": "Não é possível atualizar no modo de desenvolvimento. Por favor, compile o aplicativo."
-  }
+  },
+  "history.videoDl": "Vídeo",
+  "history.audioDl": "Áudio",
+  "history.convertTo": "Converter para",
+  "history.best": "Melhor",
+  "history.type.download": "Download",
+  "history.type.convert": "Conversão"
 }

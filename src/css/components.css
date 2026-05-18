@@ -20,7 +20,6 @@
   transition: all var(--transition-base);
   white-space: nowrap;
   position: relative;
-  overflow: hidden;
 }
 
 .btn:active {
@@ -686,9 +685,10 @@ option {
 .tooltip::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: calc(100% + 8px);
+  top: calc(100% + 8px);
+  bottom: auto;
   left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  transform: translateX(-50%) translateY(-4px);
   padding: 4px 10px;
   background: var(--bg-elevated);
   color: var(--text-primary);

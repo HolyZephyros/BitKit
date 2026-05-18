@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Uyarı: Eşzamanlı 1'den fazla video indirmek YouTube vb. platformlarda IP engellemesine (HTTP 429) yol açabilir.",
   "updater": {
     "devModeError": "Geliştirici modunda (dev mode) güncellenemez. Lütfen uygulamayı derleyin (build)."
-  }
+  },
+  "history.videoDl": "Video",
+  "history.audioDl": "Ses",
+  "history.convertTo": "Dönüştür:",
+  "history.best": "En İyi",
+  "history.type.download": "İndirme",
+  "history.type.convert": "Çevirme"
 }

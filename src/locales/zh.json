@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "警告：同时下载超过1个视频可能会导致在YouTube等平台上被封禁IP（HTTP 429）。",
   "updater": {
     "devModeError": "无法在开发模式下更新。请编译应用程序。"
-  }
+  },
+  "history.videoDl": "视频",
+  "history.audioDl": "音频",
+  "history.convertTo": "转换为",
+  "history.best": "最佳",
+  "history.type.download": "下载",
+  "history.type.convert": "转换"
 }

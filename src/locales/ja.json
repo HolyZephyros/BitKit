@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "警告：同時に1つ以上の動画をダウンロードすると、YouTubeなどのプラットフォームでIPバン（HTTP 429）が発生する可能性があります。",
   "updater": {
     "devModeError": "開発モードでは更新できません。アプリケーションをビルドしてください。"
-  }
+  },
+  "history.videoDl": "ビデオ",
+  "history.audioDl": "オーディオ",
+  "history.convertTo": "変換先",
+  "history.best": "最高",
+  "history.type.download": "ダウンロード",
+  "history.type.convert": "変換"
 }

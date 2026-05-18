@@ -48,14 +48,14 @@ function initDownloader() {
   const updateBatchUI = () => {
     if (isBatchMode) {
       if (btnToggleBatchMode) {
-         btnToggleBatchMode.classList.add('active');
+        btnToggleBatchMode.classList.add('active');
       }
       if (batchLinkList) batchLinkList.style.display = 'flex';
       if (btnAnalyzeText) btnAnalyzeText.textContent = t('dl.analyzeBatch') || "Batch Analyze";
       if (urlInput) urlInput.placeholder = t('dl.batchPlaceholderPill') || "Paste a link and press Enter...";
     } else {
       if (btnToggleBatchMode) {
-         btnToggleBatchMode.classList.remove('active');
+        btnToggleBatchMode.classList.remove('active');
       }
       if (batchLinkList) batchLinkList.style.display = 'none';
       if (btnAnalyzeText) btnAnalyzeText.textContent = t('dl.analyze') || "Analyze";
@@ -83,7 +83,7 @@ function initDownloader() {
         batchUrls.splice(index, 1);
         renderBatchPills();
         if (batchUrls.length === 0 && !urlInput.value) {
-           if (btnClearUrl) btnClearUrl.style.display = 'none';
+          if (btnClearUrl) btnClearUrl.style.display = 'none';
         }
       };
 
@@ -112,10 +112,10 @@ function initDownloader() {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (isBatchMode) {
-         addUrlToBatch(urlInput.value);
-         urlInput.value = '';
+        addUrlToBatch(urlInput.value);
+        urlInput.value = '';
       } else {
-         analyzeUrl();
+        analyzeUrl();
       }
     }
   });
@@ -292,22 +292,22 @@ function initDownloader() {
       if (val === 'custom') {
         if (activeRateInputBlock) activeRateInputBlock.style.display = 'flex';
         if (rateLimitInput) {
-           rateLimitInput.focus();
-           autoResizeRate(rateLimitInput);
+          rateLimitInput.focus();
+          autoResizeRate(rateLimitInput);
         }
 
         const initialRateLimit = document.getElementById('rateLimit');
         if (initialRateLimit) {
-           document.getElementById('customRateInputBlock').style.display = 'block';
-           document.querySelectorAll('#optRateLimitTabs .mode-btn').forEach(b => {
-               b.classList.toggle('active', b.getAttribute('data-val') === 'custom')
-           });
+          document.getElementById('customRateInputBlock').style.display = 'block';
+          document.querySelectorAll('#optRateLimitTabs .mode-btn').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-val') === 'custom')
+          });
         }
       } else {
         if (activeRateInputBlock) activeRateInputBlock.style.display = 'none';
         if (rateLimitInput) {
-           rateLimitInput.value = val;
-           applyGlobalRate();
+          rateLimitInput.value = val;
+          applyGlobalRate();
         }
       }
     });
@@ -333,26 +333,26 @@ function initDownloader() {
       if (val === 'custom') {
         if (customRateInputBlock) customRateInputBlock.style.display = 'block';
         if (initialRateLimit) {
-           initialRateLimit.focus();
-           autoResizeRate(initialRateLimit);
+          initialRateLimit.focus();
+          autoResizeRate(initialRateLimit);
         }
 
         const activeBlock = document.getElementById('activeRateInputBlock');
         if (activeBlock) {
-           activeBlock.style.display = 'flex';
-           document.querySelectorAll('#activeRateLimitTabs .tab').forEach(b => {
-               b.classList.toggle('active', b.getAttribute('data-val') === 'custom')
-           });
+          activeBlock.style.display = 'flex';
+          document.querySelectorAll('#activeRateLimitTabs .tab').forEach(b => {
+            b.classList.toggle('active', b.getAttribute('data-val') === 'custom')
+          });
         }
       } else {
         if (customRateInputBlock) customRateInputBlock.style.display = 'none';
         if (initialRateLimit) {
-             initialRateLimit.value = val;
+          initialRateLimit.value = val;
 
-             if (rateLimitInput) {
-                 rateLimitInput.value = val;
-                 applyGlobalRate();
-             }
+          if (rateLimitInput) {
+            rateLimitInput.value = val;
+            applyGlobalRate();
+          }
         }
       }
     });
@@ -373,8 +373,8 @@ function initDownloader() {
     }
 
     if (rateLimitInput) {
-       rateLimitInput.value = e.target.value;
-       applyGlobalRate();
+      rateLimitInput.value = e.target.value;
+      applyGlobalRate();
     }
   });
 
@@ -393,7 +393,7 @@ function initDownloader() {
         urlInput.value = text;
         showToast('📋 ' + t('toast.urlPasted'), 'info');
       }
-    } catch (e) {  }
+    } catch (e) { }
   });
 
   const dropZone = document.getElementById('urlDropZone');
@@ -430,26 +430,26 @@ async function analyzeUrl() {
   let lines = [];
   const batchList = document.getElementById('batchLinkList');
   if (batchList && batchList.style.display !== 'none') {
-      const pills = batchList.querySelectorAll('.batch-pill span');
-      pills.forEach(p => lines.push(p.textContent));
+    const pills = batchList.querySelectorAll('.batch-pill span');
+    pills.forEach(p => lines.push(p.textContent));
   }
 
   const urlInput = document.getElementById('urlInput');
   const currentInput = urlInput.value.trim();
   if (currentInput) {
-      if (currentInput.includes('\n')) {
-          lines.push(...currentInput.split('\n').map(l=>l.trim()).filter(l=>l));
-      } else {
-          lines.push(currentInput);
-      }
+    if (currentInput.includes('\n')) {
+      lines.push(...currentInput.split('\n').map(l => l.trim()).filter(l => l));
+    } else {
+      lines.push(currentInput);
+    }
   }
 
   lines = lines.filter(l => l && isValidUrl(l));
   lines = [...new Set(lines)];
 
   if (lines.length === 0) {
-     showToast(t('dl.invalidUrl') || "No valid URL found.", "warning");
-     return;
+    showToast(t('dl.invalidUrl') || "No valid URL found.", "warning");
+    return;
   }
 
   const loadingEl = document.getElementById('analyzeLoading');
@@ -475,7 +475,7 @@ async function analyzeUrl() {
       let url = lines[0];
       if (url.includes('youtube.com/list=')) url = url.replace('youtube.com/list=', 'youtube.com/playlist?list=');
       if (batchList && batchList.style.display === 'none') {
-          urlInput.value = url;
+        urlInput.value = url;
       }
 
       const result = await window.bitkit.download.analyze(url, cookiesPath);
@@ -488,7 +488,7 @@ async function analyzeUrl() {
         if (result.isPlaylist && result.playlist) {
           state.playlistEntries = result.playlist.entries;
           state.playlistSelected = new Set(result.playlist.entries.map((_, i) => i));
-          showToast('🎬 ' + t('toast.playlistDetected', {title: result.playlist.title, count: result.playlist.count}), 'info');
+          showToast('🎬 ' + t('toast.playlistDetected', { title: result.playlist.title, count: result.playlist.count }), 'info');
 
           const previewEl = document.getElementById('mediaPreview');
           previewEl.style.display = 'none';
@@ -531,12 +531,12 @@ async function analyzeUrl() {
         const result = await window.bitkit.download.analyze(url, cookiesPath);
         if (result.success) {
           if (!firstValidMediaInfo && result.data && result.data.formats) {
-              firstValidMediaInfo = result.data;
+            firstValidMediaInfo = result.data;
           }
           if (result.isPlaylist && result.playlist && result.playlist.entries) {
-             results.push(...result.playlist.entries);
+            results.push(...result.playlist.entries);
           } else {
-             results.push(result.data);
+            results.push(result.data);
           }
         } else {
           errors.push(url);
@@ -548,16 +548,16 @@ async function analyzeUrl() {
 
       if (results.length > 0) {
         if (errors.length > 0) {
-           showToast(t('toast.batchPartial', {success: results.length, error: errors.length}) || `${results.length} links added, ${errors.length} failed.`, 'warning', 5000);
+          showToast(t('toast.batchPartial', { success: results.length, error: errors.length }) || `${results.length} links added, ${errors.length} failed.`, 'warning', 5000);
         } else {
-           showToast(t('toast.batchSuccess', {count: results.length}) || `All ${results.length} links analyzed successfully.`, 'success');
+          showToast(t('toast.batchSuccess', { count: results.length }) || `All ${results.length} links analyzed successfully.`, 'success');
         }
 
         const mockPlaylist = {
-           title: t('dl.batchModeTitle') || "Toplu Linkler",
-           uploader: `${results.length} Medya`,
-           count: results.length,
-           entries: results
+          title: t('dl.batchModeTitle') || "Toplu Linkler",
+          uploader: `${results.length} Medya`,
+          count: results.length,
+          entries: results
         };
 
         state.mediaInfo = firstValidMediaInfo || results[0];
@@ -585,7 +585,7 @@ async function analyzeUrl() {
   } catch (err) {
     const loadingEl = document.getElementById('analyzeLoading');
     if (loadingEl) loadingEl.style.display = 'none';
-    showToast(t('toast.error', {error: err.message}), 'error');
+    showToast(t('toast.error', { error: err.message }), 'error');
   }
 }
 
@@ -865,7 +865,7 @@ function buildDownloadOptions(titleOverride = null) {
         const tags = Array.from(detail.querySelectorAll('.format-tag'));
         const kbpsTag = tags.find(t => t.textContent.includes('kbps'));
         if (kbpsTag) {
-           qual = kbpsTag.textContent.trim() + (qual ? ` (${qual})` : '');
+          qual = kbpsTag.textContent.trim() + (qual ? ` (${qual})` : '');
         }
       }
       if (qual) options.quality = qual;
@@ -890,11 +890,11 @@ async function startDownload() {
 
   const customModalRate = document.getElementById('rateLimit')?.value;
   if (customModalRate && customModalRate !== '0') {
-     const gInput = document.getElementById('globalRateLimit');
-     if (gInput && gInput.value !== customModalRate) {
-        gInput.value = customModalRate;
-        gInput.dispatchEvent(new Event('change'));
-     }
+    const gInput = document.getElementById('globalRateLimit');
+    if (gInput && gInput.value !== customModalRate) {
+      gInput.value = customModalRate;
+      gInput.dispatchEvent(new Event('change'));
+    }
   }
 
   const url = document.getElementById('urlInput').value.trim();
@@ -999,7 +999,7 @@ async function startDownload() {
       document.getElementById('playlistPanel').style.display = 'none';
     } else {
       const errMsg = result.errorKey ? t(result.errorKey, result.errorParams) : (result.error || t('error.unknownDownload'));
-      showToast('❌ ' + t('toast.downloadInitFailed', {error: errMsg}), 'error');
+      showToast('❌ ' + t('toast.downloadInitFailed', { error: errMsg }), 'error');
     }
   } catch (err) {
     showToast(t('toast.downloadError', { error: err.message }), 'error');
@@ -1020,17 +1020,39 @@ function updateDownloadProgress(data) {
 }
 
 function onDownloadComplete(data) {
-  const dl = state.downloads.get(data.id);
+  let dl = state.downloads.get(data.id);
+
+  if (!dl) {
+    setTimeout(() => {
+      onDownloadComplete(data);
+    }, 250);
+    return;
+  }
+
   if (dl?._cuttingTimerId) clearInterval(dl._cuttingTimerId);
   state.downloads.delete(data.id);
   const el = document.getElementById(`dl-${data.id}`);
 
   if (window.bitkit) {
+    let actionLabel = '';
+    let actionParam = '';
+    if (dl && dl.options) {
+      if (!dl.options.isAudio) {
+        actionLabel = 'history.videoDl';
+        actionParam = dl.options.quality || 'best';
+      } else {
+        actionLabel = 'history.audioDl';
+        actionParam = dl.options.quality || 'best';
+      }
+    }
+
     window.bitkit.history.add({
       title: data.title,
       url: data.url,
       outputPath: data.outputPath,
-      type: 'download'
+      type: 'download',
+      actionLabel: actionLabel,
+      actionParam: actionParam
     });
     if (state.currentPage === 'history' && typeof loadHistory === 'function') {
       loadHistory();
@@ -1107,7 +1129,7 @@ function onDownloadError(data) {
     const retryCount = (dlInfo.retries || 0) + 1;
     const retryDelays = [3000, 6000, 10000];
     const delay = retryDelays[retryCount - 1] || 5000;
-    showToast('🔄 ' + t('toast.retrying', {count: retryCount, delay: delay / 1000}), 'warning');
+    showToast('🔄 ' + t('toast.retrying', { count: retryCount, delay: delay / 1000 }), 'warning');
     dlInfo.retries = retryCount;
 
     if (window.bitkit && dlInfo.url) {
@@ -1375,10 +1397,10 @@ function startQueuedItem(index) {
       updateStatusBar();
     } else {
       const errMsg = result.errorKey ? t(result.errorKey, result.errorParams) : result.error;
-      showToast('❌ ' + t('toast.downloadInitFailed', {error: errMsg}), 'error');
+      showToast('❌ ' + t('toast.downloadInitFailed', { error: errMsg }), 'error');
     }
   }).catch(err => {
-    showToast(t('toast.downloadErrorTitle', {title: truncate(item.title, 30), error: err.message}), 'error');
+    showToast(t('toast.downloadErrorTitle', { title: truncate(item.title, 30), error: err.message }), 'error');
   });
 }
 
@@ -1441,7 +1463,7 @@ function processNextInQueue() {
 
   item.options.outputPath = state.settings.downloadPath;
   item.options.cookiesPath = state.settings.cookiesPath || undefined;
-  
+
   activeQueueCount++;
 
   window.bitkit.download.start(item.url, item.options).then(result => {
@@ -1460,7 +1482,7 @@ function processNextInQueue() {
       processNextInQueue();
     } else {
       const errMsg = result.errorKey ? t(result.errorKey, result.errorParams) : result.error;
-      showToast('❌ ' + t('toast.downloadInitFailed', {error: errMsg}), 'error');
+      showToast('❌ ' + t('toast.downloadInitFailed', { error: errMsg }), 'error');
       if (result.errorKey === 'backend.noWritePermission') {
         state.pendingQueue.unshift(item);
         state.queueProcessingActive = false;
@@ -1471,7 +1493,7 @@ function processNextInQueue() {
     }
   }).catch(err => {
     activeQueueCount--;
-    showToast(t('toast.downloadErrorTitle', {title: truncate(item.title, 30), error: err.message}), 'error');
+    showToast(t('toast.downloadErrorTitle', { title: truncate(item.title, 30), error: err.message }), 'error');
     processNextInQueue();
   });
 }
@@ -1490,7 +1512,7 @@ function showPlaylistPanel(playlist) {
   panel.style.display = 'block';
 
   document.getElementById('playlistPanelTitle').textContent = playlist.title || t('dl.playlist');
-  document.getElementById('playlistCountBadge').textContent = t('dl.videoCount', {count: playlist.count || 0});
+  document.getElementById('playlistCountBadge').textContent = t('dl.videoCount', { count: playlist.count || 0 });
 
   renderPlaylistItems();
   updatePlaylistSelectionInfo();
@@ -1581,7 +1603,7 @@ function filterPlaylistItems(query) {
     if (!existing) {
       const emptyEl = document.createElement('div');
       emptyEl.className = 'playlist-empty-search';
-      emptyEl.textContent = t('dl.playlistNoMatch', {query: query});
+      emptyEl.textContent = t('dl.playlistNoMatch', { query: query });
       container.appendChild(emptyEl);
     }
   } else if (existing) {
@@ -1657,7 +1679,7 @@ function queueSelectedPlaylistItems() {
   }
 
   renderPendingQueue();
-  showToast('🎬 ' + t('toast.videosQueued', {count: addedCount}), 'success');
+  showToast('🎬 ' + t('toast.videosQueued', { count: addedCount }), 'success');
 
   state.mediaInfo = null;
   state.playlistEntries = null;

@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Ostrzeżenie: Pobieranie więcej niż 1 filmu jednocześnie może skutkować blokadami IP (HTTP 429) na platformach takich jak YouTube.",
   "updater": {
     "devModeError": "Nie można aktualizować w trybie programisty. Proszę skompilować aplikację."
-  }
+  },
+  "history.videoDl": "Wideo",
+  "history.audioDl": "Dźwięk",
+  "history.convertTo": "Konwertuj na",
+  "history.best": "Najlepsza",
+  "history.type.download": "Pobieranie",
+  "history.type.convert": "Konwersja"
 }

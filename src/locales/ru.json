@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Внимание: Одновременная загрузка более 1 видео может привести к блокировке IP (HTTP 429) на таких платформах, как YouTube.",
   "updater": {
     "devModeError": "Невозможно обновить в режиме разработки. Пожалуйста, скомпилируйте приложение."
-  }
+  },
+  "history.videoDl": "Видео",
+  "history.audioDl": "Аудио",
+  "history.convertTo": "Конвертировать в",
+  "history.best": "Лучшее",
+  "history.type.download": "Скачивание",
+  "history.type.convert": "Конвертация"
 }

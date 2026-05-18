@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Warnung: Das gleichzeitige Herunterladen von mehr als 1 Video kann zu IP-Sperren (HTTP 429) auf Plattformen wie YouTube führen.",
   "updater": {
     "devModeError": "Im Entwicklungsmodus kann nicht aktualisiert werden. Bitte kompilieren Sie die Anwendung."
-  }
+  },
+  "history.videoDl": "Video",
+  "history.audioDl": "Audio",
+  "history.convertTo": "Konvertieren in",
+  "history.best": "Beste",
+  "history.type.download": "Download",
+  "history.type.convert": "Konvertierung"
 }

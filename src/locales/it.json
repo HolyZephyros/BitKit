@@ -682,5 +682,11 @@
   "settings.concurrentWarning": "Avviso: Scaricare più di 1 video contemporaneamente può causare blocchi IP (HTTP 429) su piattaforme come YouTube.",
   "updater": {
     "devModeError": "Impossibile aggiornare in modalità di sviluppo. Si prega di compilare l'applicazione."
-  }
+  },
+  "history.videoDl": "Video",
+  "history.audioDl": "Audio",
+  "history.convertTo": "Converti in",
+  "history.best": "Migliore",
+  "history.type.download": "Scaricamento",
+  "history.type.convert": "Conversione"
 }
