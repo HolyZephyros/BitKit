@@ -67,20 +67,36 @@ ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized());
 function getBinPath(binName) {
   const devPath = path.join(__dirname, '..', 'resources', 'bin', binName);
   const prodPath = path.join(process.resourcesPath, 'bin', binName);
+  const prodHiddenPath = path.join(process.resourcesPath, 'bin', binName + '.hidden');
 
   const userDataBinDir = path.join(app.getPath('userData'), 'bin');
   const userBinPath = path.join(userDataBinDir, binName);
+  const versionFile = path.join(userDataBinDir, 'app_version.txt');
 
   if (!fs.existsSync(userDataBinDir)) {
     try { fs.mkdirSync(userDataBinDir, { recursive: true }); } catch (e) {}
   }
 
-  if (!fs.existsSync(userBinPath)) {
-    if (fs.existsSync(prodPath)) {
+  let savedVersion = '';
+  try { if (fs.existsSync(versionFile)) savedVersion = fs.readFileSync(versionFile, 'utf-8'); } catch (e) {}
+
+  const currentVersion = app.getVersion();
+  const needsUpdate = savedVersion !== currentVersion;
+
+  if (needsUpdate || !fs.existsSync(userBinPath)) {
+    if (fs.existsSync(prodHiddenPath)) {
+      try { fs.copyFileSync(prodHiddenPath, userBinPath); } catch (e) {}
+    } else if (fs.existsSync(prodPath)) {
       try { fs.copyFileSync(prodPath, userBinPath); } catch (e) {}
     } else if (fs.existsSync(devPath)) {
       try { fs.copyFileSync(devPath, userBinPath); } catch (e) {}
     }
+  }
+
+  // We write the version file ONLY after all binaries are fetched
+  // This could be done once at startup, but doing it here per binary is fine
+  if (needsUpdate && fs.existsSync(userBinPath)) {
+    try { fs.writeFileSync(versionFile, currentVersion, 'utf-8'); } catch (e) {}
   }
 
   if (fs.existsSync(userBinPath)) return userBinPath;

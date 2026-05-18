@@ -1,6 +1,6 @@
 {
   "name": "bitkit",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "BitKit — All-in-one media toolkit powered by yt-dlp & ffmpeg",
   "main": "electron/main.js",
   "scripts": {
@@ -24,12 +24,14 @@
       "!.vscode${/*}",
       "!**/*.log"
     ],
+    "afterPack": "scripts/afterPack.js",
     "directories": {
       "output": "dist"
     },
     "win": {
       "target": "nsis",
-      "icon": "src/assets/icons/icon.png"
+      "icon": "src/assets/icons/icon.png",
+      "signExts": []
     },
     "nsis": {
       "oneClick": true,
