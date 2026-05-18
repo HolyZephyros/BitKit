@@ -179,7 +179,17 @@ ipcMain.on('queue:save', (event, queueData) => {
 });
 
 ipcMain.handle('shell:openPath', (event, filePath) => shell.openPath(filePath));
-ipcMain.handle('shell:showItemInFolder', (event, filePath) => shell.showItemInFolder(filePath));
+ipcMain.handle('shell:showItemInFolder', (event, filePath) => {
+  try {
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+      shell.openPath(filePath);
+    } else {
+      shell.showItemInFolder(filePath);
+    }
+  } catch (e) {
+    shell.showItemInFolder(filePath);
+  }
+});
 ipcMain.handle('shell:openExternal', (event, url) => shell.openExternal(url));
 
 ipcMain.handle('system:shutdown', (event, message) => {
