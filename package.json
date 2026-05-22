@@ -1,6 +1,6 @@
 {
   "name": "bitkit",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "BitKit — All-in-one media toolkit powered by yt-dlp & ffmpeg",
   "main": "electron/main.js",
   "scripts": {

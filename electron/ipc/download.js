@@ -10,7 +10,16 @@ function register(ipcMain, getBinPath) {
   ipcMain.handle('download:analyze', async (event, url, cookiesPath) => {
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
-    const args = ['--ignore-config', '--dump-json', '--no-download'];
+    const args = [
+      '--ignore-config',
+      '--dump-json',
+      '--no-download',
+      '--js-runtimes', `node:${process.execPath}`,
+      '--js-runtimes', 'deno',
+      '--js-runtimes', 'node',
+      '--js-runtimes', 'bun',
+      '--js-runtimes', 'quickjs'
+    ];
 
     const isPlaylistUrl = url.match(/[?&]list=/) || url.includes('/playlist');
 
@@ -30,7 +39,13 @@ function register(ipcMain, getBinPath) {
       let stdout = '';
       let stderr = '';
 
-      const proc = spawn(ytdlp, args, { cwd: path.dirname(ytdlp) });
+      const proc = spawn(ytdlp, args, {
+        cwd: path.dirname(ytdlp),
+        env: {
+          ...process.env,
+          ELECTRON_RUN_AS_NODE: '1'
+        }
+      });
 
       proc.stdout.on('data', (data) => { stdout += data.toString(); });
       proc.stderr.on('data', (data) => { stderr += data.toString(); });
@@ -155,7 +170,15 @@ function register(ipcMain, getBinPath) {
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
     const id = crypto.randomUUID();
-    const args = ['--ignore-config', '--windows-filenames'];
+    const args = [
+      '--ignore-config',
+      '--windows-filenames',
+      '--js-runtimes', `node:${process.execPath}`,
+      '--js-runtimes', 'deno',
+      '--js-runtimes', 'node',
+      '--js-runtimes', 'bun',
+      '--js-runtimes', 'quickjs'
+    ];
 
     const outputPath = options.outputPath || require('electron').app.getPath('downloads');
     let template = options.filenameTemplate || '%(title)s.%(ext)s';
@@ -315,7 +338,13 @@ function register(ipcMain, getBinPath) {
     args.push('--', url);
 
     console.log('[BitKit:Download]', { id, args: args.join(' ') });
-    const proc = spawn(ytdlp, args, { cwd: path.dirname(ytdlp) });
+    const proc = spawn(ytdlp, args, {
+      cwd: path.dirname(ytdlp),
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: '1'
+      }
+    });
     activeDownloads.set(id, { proc, url, options, args, startTime: Date.now(), knownFiles: new Set() });
 
     let lastOutput = '';
