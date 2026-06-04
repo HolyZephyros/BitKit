@@ -10,10 +10,12 @@ function register(ipcMain, getBinPath) {
   ipcMain.handle('download:analyze', async (event, url, cookiesPath) => {
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
+    const deno = getBinPath('deno.exe');
     const args = [
       '--ignore-config',
       '--dump-json',
       '--no-download',
+      '--js-runtimes', `deno:${deno}`,
       '--js-runtimes', `node:${process.execPath}`,
       '--js-runtimes', 'deno',
       '--js-runtimes', 'node',
@@ -169,10 +171,12 @@ function register(ipcMain, getBinPath) {
     }
     if (url && !url.match(/^https?:\/\//i)) url = 'https://' + url;
     const ytdlp = getBinPath('yt-dlp.exe');
+    const deno = getBinPath('deno.exe');
     const id = crypto.randomUUID();
     const args = [
       '--ignore-config',
       '--windows-filenames',
+      '--js-runtimes', `deno:${deno}`,
       '--js-runtimes', `node:${process.execPath}`,
       '--js-runtimes', 'deno',
       '--js-runtimes', 'node',

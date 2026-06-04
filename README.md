@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/Platform-Windows-blue?logo=windows&logoColor=white" alt="Windows">
   <img src="https://img.shields.io/badge/Electron-41-47848F?logo=electron&logoColor=white" alt="Electron">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License">
-  <img src="https://img.shields.io/badge/Version-1.0.14-2A9D8F" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.1.0-2A9D8F" alt="Version">
 </p>
 
 <p align="center">

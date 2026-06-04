@@ -110,7 +110,8 @@ function getBinPath(binName) {
 ipcMain.handle('get:binPaths', () => ({
   ytdlp: getBinPath('yt-dlp.exe'),
   ffmpeg: getBinPath('ffmpeg.exe'),
-  ffprobe: getBinPath('ffprobe.exe')
+  ffprobe: getBinPath('ffprobe.exe'),
+  deno: getBinPath('deno.exe')
 }));
 
 function atomicWriteSync(filePath, data) {
@@ -288,6 +289,9 @@ function registerIPCModules() {
   mediaInfoIPC.register(ipcMain, getBinPath);
   fileManagerIPC.register(ipcMain, dialog);
   updaterIPC.register(ipcMain, getBinPath, app);
+  
+  // Ensure Deno is copied to userData bin folder on startup
+  try { getBinPath('deno.exe'); } catch (e) { console.error('Failed to copy Deno:', e); }
 }
 
 app.whenReady().then(async () => {

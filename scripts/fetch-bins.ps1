@@ -10,7 +10,12 @@ if (!(Test-Path $binFolder)) {
 $versionFile = Join-Path $binFolder "versions.json"
 $currentVersions = @{}
 if (Test-Path $versionFile) {
-    $currentVersions = Get-Content $versionFile | ConvertFrom-Json
+    $json = Get-Content $versionFile -Raw | ConvertFrom-Json
+    if ($json) {
+        foreach ($prop in $json.PSObject.Properties) {
+            $currentVersions[$prop.Name] = $prop.Value
+        }
+    }
 }
 
 Write-Host "Checking yt-dlp version..." -ForegroundColor Cyan
@@ -27,6 +32,33 @@ else {
     Invoke-WebRequest -Uri $ytdlpUrl -OutFile $ytdlpDest -UseBasicParsing
     Write-Host "yt-dlp downloaded successfully!" -ForegroundColor Green
     $currentVersions."yt-dlp" = $ytdlpVersion
+}
+
+Write-Host "Checking Deno..." -ForegroundColor Cyan
+$denoDest = Join-Path $binFolder "deno.exe"
+
+if ((Test-Path $denoDest) -and $currentVersions."deno") {
+    Write-Host "Deno is already installed. Skipping download." -ForegroundColor Green
+}
+else {
+    Write-Host "Downloading Deno..." -ForegroundColor Yellow
+    $denoUrl = "https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip"
+    $tempDir = [System.IO.Path]::GetTempPath()
+    $tempZip = Join-Path $tempDir "deno_prebuild.zip"
+    $tempExt = Join-Path $tempDir "deno_ext_prebuild"
+    if (Test-Path $tempExt) { Remove-Item -Recurse -Force $tempExt }
+
+    Invoke-WebRequest -Uri $denoUrl -OutFile $tempZip -UseBasicParsing
+    Write-Host "Extracting Deno zip archive..." -ForegroundColor Yellow
+    Expand-Archive -Path $tempZip -DestinationPath $tempExt -Force
+
+    $denoSrc = Join-Path $tempExt "deno.exe"
+    Copy-Item -Path $denoSrc -Destination $denoDest -Force
+
+    Write-Host "Deno extracted successfully!" -ForegroundColor Green
+    Remove-Item -Path $tempZip -Force
+    Remove-Item -Recurse -Force $tempExt
+    $currentVersions."deno" = "latest"
 }
 
 Write-Host "Checking FFmpeg..." -ForegroundColor Cyan
