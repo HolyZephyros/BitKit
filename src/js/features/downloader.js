@@ -510,10 +510,14 @@ async function analyzeUrl() {
           if (btnQueueText) btnQueueText.textContent = t('dl.addToQueue');
         }
       } else {
-        const errMsg = result.error || t('toast.analysisFailed');
-        const shortErr = errMsg.length > 150 ? errMsg.substring(0, 150) + '…' : errMsg;
         console.error('[BitKit:Analyze] Failed:', result);
-        showToast(shortErr, 'error', 8000);
+        const errMsg = result.error || t('toast.analysisFailed');
+        if (typeof window.showErrorToast === 'function') {
+          window.showErrorToast(errMsg, 'Downloader');
+        } else {
+          const shortErr = errMsg.length > 150 ? errMsg.substring(0, 150) + '…' : errMsg;
+          showToast(shortErr, 'error', 8000);
+        }
       }
     }
 

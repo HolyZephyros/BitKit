@@ -124,7 +124,14 @@ function register(ipcMain, getBinPath) {
           }
         } else {
           console.error('[BitKit:Analyze] yt-dlp error (code', code, '):', stderr);
-          resolve({ success: false, error: stderr || `yt-dlp exited with code ${code}`, errorKey: 'backend.ytdlpError', errorParams: { code, err: stderr } });
+          let cleanError = stderr;
+          if (stderr.includes('ERROR:')) {
+            const match = stderr.match(/ERROR:\s*(.*)/);
+            if (match && match[1]) {
+              cleanError = match[1].trim();
+            }
+          }
+          resolve({ success: false, error: cleanError || `yt-dlp exited with code ${code}`, errorKey: 'backend.ytdlpError', errorParams: { code, err: stderr } });
         }
       });
 
