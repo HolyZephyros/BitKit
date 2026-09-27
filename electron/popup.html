@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  .popup-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: rgba(14, 16, 23, 0.96);
+    border: 1px solid rgba(0, 210, 211, 0.38);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 210, 211, 0.18);
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    gap: 12px;
+    cursor: pointer;
+    backdrop-filter: blur(16px);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    transform: translateY(35px);
+    opacity: 0;
+  }
+  .popup-card.visible {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .popup-card:hover {
+    border-color: rgba(0, 210, 211, 0.75);
+    background: rgba(20, 24, 34, 0.98);
+  }
+  .popup-icon-wrap {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 210, 211, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(0, 210, 211, 0.25);
+  }
+  .popup-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+  .popup-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .popup-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .popup-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #00d2d3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .popup-sep {
+    opacity: 0.45;
+    font-size: 10px;
+  }
+  .popup-status {
+    color: #00d2d3;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .popup-badge {
+    background: #00d2d3;
+    color: #0c1017;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 1px 6px;
+    border-radius: 8px;
+    letter-spacing: 0;
+  }
+  .popup-message {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f1f2f6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+  }
+  .popup-sub {
+    font-size: 11px;
+    color: #8395a7;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .popup-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #00d2d3, #1dd1a1);
+    border-radius: 0 0 12px 12px;
+    width: 100%;
+    transform-origin: left;
+    transition: width 2.5s linear;
+  }
+</style>
+</head>
+<body>
+  <div class="popup-card" id="popupCard">
+    <div class="popup-icon-wrap">
+      <img src="../src/assets/icons/icon.png" class="popup-icon" alt="BitKit">
+    </div>
+    <div class="popup-body">
+      <div class="popup-header-row">
+        <div class="popup-title">
+          <span id="popupTitle">BitKit</span>
+          <span class="popup-sep">•</span>
+          <span class="popup-status" id="popupStatus">Link Eklendi</span>
+        </div>
+        <span class="popup-badge" id="popupBadge" style="display:none;">0</span>
+      </div>
+      <div class="popup-message" id="popupMessage">Link algılandı ve eklendi</div>
+      <div class="popup-sub" id="popupSub">Toplu indirme listesi</div>
+    </div>
+    <div class="popup-progress" id="popupProgress"></div>
+  </div>
+
+  <script>
+    const card = document.getElementById('popupCard');
+    const titleEl = document.getElementById('popupTitle');
+    const statusEl = document.getElementById('popupStatus');
+    const badgeEl = document.getElementById('popupBadge');
+    const messageEl = document.getElementById('popupMessage');
+    const subEl = document.getElementById('popupSub');
+    const progressEl = document.getElementById('popupProgress');
+
+    card.addEventListener('click', () => {
+      window.popupBridge?.click();
+    });
+
+    window.popupBridge?.onData((data) => {
+      if (data.title) titleEl.textContent = data.title;
+      if (data.status) statusEl.textContent = data.status;
+      if (data.message) messageEl.textContent = data.message;
+      if (data.subtitle) subEl.textContent = data.subtitle;
+
+      if (data.count && data.count > 0) {
+        badgeEl.textContent = data.count;
+        badgeEl.style.display = 'inline-block';
+      } else {
+        badgeEl.style.display = 'none';
+      }
+
+      // Reset animation
+      card.classList.remove('visible');
+      progressEl.style.transition = 'none';
+      progressEl.style.width = '100%';
+
+      requestAnimationFrame(() => {
+        card.classList.add('visible');
+        requestAnimationFrame(() => {
+          progressEl.style.transition = 'width 2.5s linear';
+          progressEl.style.width = '0%';
+        });
+      });
+    });
+
+    window.popupBridge?.onHide(() => {
+      card.classList.remove('visible');
+    });
+  </script>
+</body>
+</html>

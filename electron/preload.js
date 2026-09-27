@@ -122,6 +122,22 @@ contextBridge.exposeInMainWorld('bitkit', {
     getBinPaths: () => ipcRenderer.invoke('get:binPaths')
   },
 
+  clipboard: {
+    startWatch: () => ipcRenderer.invoke('clipboard:startWatch'),
+    stopWatch: () => ipcRenderer.invoke('clipboard:stopWatch'),
+    readText: () => ipcRenderer.invoke('clipboard:readText'),
+    onUrlsDetected: (callback) => {
+      const handler = (event, data) => callback(data);
+      ipcRenderer.on('clipboard:urlsDetected', handler);
+      return () => ipcRenderer.removeListener('clipboard:urlsDetected', handler);
+    }
+  },
+
+  popup: {
+    show: (data) => ipcRenderer.invoke('popup:show', data),
+    close: () => ipcRenderer.invoke('popup:close')
+  },
+
   shell: {
     openPath: (path) => ipcRenderer.invoke('shell:openPath', path),
     showInFolder: (path) => ipcRenderer.invoke('shell:showItemInFolder', path),

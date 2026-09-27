@@ -688,5 +688,11 @@
   "history.convertTo": "Convertir en",
   "history.best": "Meilleur",
   "history.type.download": "Téléchargement",
-  "history.type.convert": "Conversion"
+  "history.type.convert": "Conversion",
+  "dl.batchListening": "Détection automatique des liens copiés depuis le presse-papiers...",
+  "dl.batchLinksCount": "{{count}} liens collectés",
+  "dl.clearBatch": "Tout effacer",
+  "toast.linkAutoDetected": "Lien détecté automatiquement depuis le presse-papiers",
+  "toast.linksAutoDetected": "{{count}} liens détectés automatiquement depuis le presse-papiers",
+  "dl.linkAdded": "Lien ajouté"
 }

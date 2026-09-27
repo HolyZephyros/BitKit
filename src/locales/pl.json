@@ -688,5 +688,11 @@
   "history.convertTo": "Konwertuj na",
   "history.best": "Najlepsza",
   "history.type.download": "Pobieranie",
-  "history.type.convert": "Konwersja"
+  "history.type.convert": "Konwersja",
+  "dl.batchListening": "Automatyczne wykrywanie linków skopiowanych ze schowka...",
+  "dl.batchLinksCount": "Zebrano {{count}} linków",
+  "dl.clearBatch": "Wyczyść wszystko",
+  "toast.linkAutoDetected": "Link automatycznie dodany ze schowka",
+  "toast.linksAutoDetected": "{{count}} linków automatycznie dodanych ze schowka",
+  "dl.linkAdded": "Link dodany"
 }

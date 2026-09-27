@@ -20,8 +20,9 @@ function initDownloader() {
   btnClearUrl?.addEventListener('click', () => {
     if (urlInput) urlInput.value = '';
 
-    batchUrls = [];
-    renderBatchPills();
+    if (window.clearBatchUrls) {
+      window.clearBatchUrls();
+    }
     btnClearUrl.style.display = 'none';
 
     const mediaPreview = document.getElementById('mediaPreview');
@@ -38,108 +39,9 @@ function initDownloader() {
     state.playlistSelected = new Set();
   });
 
-  const btnToggleBatchMode = document.getElementById('btnToggleBatchMode');
-  const batchLinkList = document.getElementById('batchLinkList');
-  const btnAnalyzeText = document.querySelector('#btnAnalyze span');
-
-  let isBatchMode = false;
-  let batchUrls = [];
-
-  const updateBatchUI = () => {
-    if (isBatchMode) {
-      if (btnToggleBatchMode) {
-        btnToggleBatchMode.classList.add('active');
-      }
-      if (batchLinkList) batchLinkList.style.display = 'flex';
-      if (btnAnalyzeText) btnAnalyzeText.textContent = t('dl.analyzeBatch') || "Batch Analyze";
-      if (urlInput) urlInput.placeholder = t('dl.batchPlaceholderPill') || "Paste a link and press Enter...";
-    } else {
-      if (btnToggleBatchMode) {
-        btnToggleBatchMode.classList.remove('active');
-      }
-      if (batchLinkList) batchLinkList.style.display = 'none';
-      if (btnAnalyzeText) btnAnalyzeText.textContent = t('dl.analyze') || "Analyze";
-      if (urlInput) urlInput.placeholder = t('dl.urlPlaceholder') || "Paste a video or audio URL...";
-      batchUrls = [];
-      renderBatchPills();
-    }
-  };
-
-  const renderBatchPills = () => {
-    batchLinkList.textContent = '';
-    batchUrls.forEach((url, index) => {
-      const pill = document.createElement('div');
-      pill.className = 'batch-pill';
-      pill.style.cssText = 'display:flex; align-items:center; background:var(--bg-elevated); border:1px solid var(--glass-border); padding:4px 8px; border-radius:12px; gap:6px; font-size:12px; max-width:100%;';
-
-      const textSpan = document.createElement('span');
-      textSpan.style.cssText = 'overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:200px; color:var(--text-primary);';
-      textSpan.textContent = url;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.style.cssText = 'background:none; border:none; color:var(--accent-bordo); cursor:pointer; padding:0; display:flex;';
-      setSafeHtml(removeBtn, '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M18 6L6 18M6 6l12 12"></path></svg>');
-      removeBtn.onclick = () => {
-        batchUrls.splice(index, 1);
-        renderBatchPills();
-        if (batchUrls.length === 0 && !urlInput.value) {
-          if (btnClearUrl) btnClearUrl.style.display = 'none';
-        }
-      };
-
-      pill.appendChild(textSpan);
-      pill.appendChild(removeBtn);
-      batchLinkList.appendChild(pill);
-    });
-  };
-
-  const addUrlToBatch = (url) => {
-    url = url.trim();
-    if (!url || !isValidUrl(url)) return;
-    if (!batchUrls.includes(url)) {
-      batchUrls.push(url);
-      renderBatchPills();
-      if (btnClearUrl) btnClearUrl.style.display = 'inline-flex';
-    }
-  };
-
-  btnToggleBatchMode?.addEventListener('click', () => {
-    isBatchMode = !isBatchMode;
-    updateBatchUI();
-  });
-
-  urlInput?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      if (isBatchMode) {
-        addUrlToBatch(urlInput.value);
-        urlInput.value = '';
-      } else {
-        analyzeUrl();
-      }
-    }
-  });
-
-  urlInput?.addEventListener('paste', (e) => {
-    setTimeout(() => {
-      const val = urlInput.value;
-      if (val.includes('\n')) {
-
-        isBatchMode = true;
-        updateBatchUI();
-        const lines = val.split('\n');
-        lines.forEach(l => addUrlToBatch(l));
-        urlInput.value = '';
-      } else {
-        if (isBatchMode) {
-
-        } else {
-          analyzeUrl();
-        }
-      }
-      if (btnClearUrl) btnClearUrl.style.display = 'inline-flex';
-    }, 50);
-  });
+  if (window.initBatchManager) {
+    window.initBatchManager();
+  }
 
   btnDownload?.addEventListener('click', () => startDownload());
 
@@ -384,6 +286,7 @@ function initDownloader() {
   window.addEventListener('focus', async () => {
 
     if (typeof getAvailableLocales === 'function' && getAvailableLocales().length === 0) return;
+    if (window.isBatchModeActive && window.isBatchModeActive()) return;
 
     try {
       const text = await navigator.clipboard.readText();
@@ -428,10 +331,14 @@ function isValidUrl(str) {
 
 async function analyzeUrl() {
   let lines = [];
-  const batchList = document.getElementById('batchLinkList');
-  if (batchList && batchList.style.display !== 'none') {
-    const pills = batchList.querySelectorAll('.batch-pill span');
-    pills.forEach(p => lines.push(p.textContent));
+  if (typeof window.getBatchUrls === 'function' && window.getBatchUrls().length > 0) {
+    lines.push(...window.getBatchUrls());
+  } else {
+    const batchList = document.getElementById('batchLinkList');
+    if (batchList && batchList.style.display !== 'none') {
+      const pills = batchList.querySelectorAll('.batch-pill .batch-url-text');
+      pills.forEach(p => lines.push(p.textContent));
+    }
   }
 
   const urlInput = document.getElementById('urlInput');

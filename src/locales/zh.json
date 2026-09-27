@@ -688,5 +688,11 @@
   "history.convertTo": "转换为",
   "history.best": "最佳",
   "history.type.download": "下载",
-  "history.type.convert": "转换"
+  "history.type.convert": "转换",
+  "dl.batchListening": "正在自动检测剪贴板中复制的链接...",
+  "dl.batchLinksCount": "已收集 {{count}} 个链接",
+  "dl.clearBatch": "清空全部",
+  "toast.linkAutoDetected": "已从剪贴板自动添加链接",
+  "toast.linksAutoDetected": "已从剪贴板自动添加 {{count}} 个链接",
+  "dl.linkAdded": "链接已添加"
 }

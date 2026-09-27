@@ -688,5 +688,11 @@
   "history.convertTo": "Convertir a",
   "history.best": "Mejor",
   "history.type.download": "Descarga",
-  "history.type.convert": "Conversión"
+  "history.type.convert": "Conversión",
+  "dl.batchListening": "Detectando automáticamente enlaces copiados del portapapeles...",
+  "dl.batchLinksCount": "{{count}} enlaces recopilados",
+  "dl.clearBatch": "Borrar todo",
+  "toast.linkAutoDetected": "Enlace detectado automáticamente del portapapeles",
+  "toast.linksAutoDetected": "{{count}} enlaces detectados automáticamente del portapapeles",
+  "dl.linkAdded": "Enlace añadido"
 }

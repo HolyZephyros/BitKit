@@ -688,5 +688,11 @@
   "history.convertTo": "Converti in",
   "history.best": "Migliore",
   "history.type.download": "Scaricamento",
-  "history.type.convert": "Conversione"
+  "history.type.convert": "Conversione",
+  "dl.batchListening": "Rilevamento automatico dei link copiati dagli appunti...",
+  "dl.batchLinksCount": "{{count}} link raccolti",
+  "dl.clearBatch": "Cancella tutto",
+  "toast.linkAutoDetected": "Link rilevato automaticamente dagli appunti",
+  "toast.linksAutoDetected": "{{count}} link rilevati automaticamente dagli appunti",
+  "dl.linkAdded": "Link aggiunto"
 }

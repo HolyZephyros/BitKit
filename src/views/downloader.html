@@ -15,14 +15,33 @@
 </button>
 <button class="btn btn-lg btn-batch-toggle tooltip" data-i18n-tip="dl.batchModeTitle" id="btnToggleBatchMode">
 <svg fill="none" height="28" stroke="currentColor" stroke-width="2.5" viewbox="1 3 22 22" width="28"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>
+<span class="batch-badge" id="batchBadge" style="display:none;">0</span>
 </button>
 <button class="btn btn-secondary btn-lg" id="btnAnalyze">
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
 <span data-i18n="dl.analyze">Analiz Et</span>
 </button>
 </div>
-<!-- Batch Link List (Hidden by default) -->
-<div id="batchLinkList" class="flex-row gap-sm" style="display:none; flex-wrap:wrap; margin-top:var(--space-sm);"></div>
+<!-- Batch Container (Hidden by default) -->
+<div class="batch-container" id="batchContainer" style="display:none;">
+<div class="batch-listening-banner" id="batchListeningBanner">
+<div class="batch-listening-indicator">
+<span class="pulse-dot"></span>
+<span data-i18n="dl.batchListening">Panodan kopyalanan linkler otomatik algılanıyor...</span>
+</div>
+</div>
+<div class="batch-header" id="batchHeader" style="display:none;">
+<div class="batch-header-left">
+<span class="pulse-dot"></span>
+<span class="batch-count-label" id="batchCountLabel"></span>
+</div>
+<button class="btn btn-ghost btn-sm" id="btnClearBatch" style="color:var(--accent-bordo); font-size:12px; padding:2px 8px;">
+<svg fill="none" height="13" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="13"><polyline points="3,6 5,6 21,6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+<span data-i18n="dl.clearBatch">Tümünü Temizle</span>
+</button>
+</div>
+<div class="flex-row gap-sm" id="batchLinkList" style="flex-wrap:wrap; margin-top:var(--space-xs);"></div>
+</div>
 </div>
 <!-- Loading State -->
 <div id="analyzeLoading" style="display:none">

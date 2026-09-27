@@ -688,5 +688,11 @@
   "history.convertTo": "Convert to",
   "history.best": "Best",
   "history.type.download": "Download",
-  "history.type.convert": "Conversion"
+  "history.type.convert": "Conversion",
+  "dl.batchListening": "Auto-detecting copied links from clipboard...",
+  "dl.batchLinksCount": "{{count}} links collected",
+  "dl.clearBatch": "Clear All",
+  "toast.linkAutoDetected": "Link auto-detected from clipboard",
+  "toast.linksAutoDetected": "{{count}} links auto-detected from clipboard",
+  "dl.linkAdded": "Link Added"
 }

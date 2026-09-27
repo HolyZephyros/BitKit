@@ -20,6 +20,8 @@ const convertIPC = require('./ipc/convert');
 const mediaInfoIPC = require('./ipc/mediaInfo');
 const fileManagerIPC = require('./ipc/fileManager');
 const updaterIPC = require('./ipc/updater');
+const clipboardIPC = require('./ipc/clipboard');
+const popupNotification = require('./ipc/popupNotification');
 
 let mainWindow;
 
@@ -289,6 +291,8 @@ function registerIPCModules() {
   mediaInfoIPC.register(ipcMain, getBinPath);
   fileManagerIPC.register(ipcMain, dialog);
   updaterIPC.register(ipcMain, getBinPath, app);
+  clipboardIPC.register(ipcMain, () => mainWindow);
+  popupNotification.register(ipcMain, () => mainWindow);
   
   // Ensure Deno is copied to userData bin folder on startup
   try { getBinPath('deno.exe'); } catch (e) { console.error('Failed to copy Deno:', e); }
@@ -318,6 +322,9 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
+
+  clipboardIPC.stopWatch();
+  popupNotification.destroy();
 
   const proxy = require('./ipc/proxy');
   proxy.stopProxy();

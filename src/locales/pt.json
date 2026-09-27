@@ -688,5 +688,11 @@
   "history.convertTo": "Converter para",
   "history.best": "Melhor",
   "history.type.download": "Download",
-  "history.type.convert": "Conversão"
+  "history.type.convert": "Conversão",
+  "dl.batchListening": "Detectando links copiados da área de transferência...",
+  "dl.batchLinksCount": "{{count}} links coletados",
+  "dl.clearBatch": "Limpar tudo",
+  "toast.linkAutoDetected": "Link adicionado automaticamente da área de transferência",
+  "toast.linksAutoDetected": "{{count}} links adicionados automaticamente da área de transferência",
+  "dl.linkAdded": "Link adicionado"
 }

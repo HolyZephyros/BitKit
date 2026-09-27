@@ -688,5 +688,11 @@
   "history.convertTo": "Konvertieren in",
   "history.best": "Beste",
   "history.type.download": "Download",
-  "history.type.convert": "Konvertierung"
+  "history.type.convert": "Konvertierung",
+  "dl.batchListening": "Kopierte Links aus der Zwischenablage werden automatisch erkannt...",
+  "dl.batchLinksCount": "{{count}} Links gesammelt",
+  "dl.clearBatch": "Alle löschen",
+  "toast.linkAutoDetected": "Link automatisch aus der Zwischenablage erkannt",
+  "toast.linksAutoDetected": "{{count}} Links automatisch aus der Zwischenablage erkannt",
+  "dl.linkAdded": "Link hinzugefügt"
 }

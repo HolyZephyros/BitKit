@@ -688,5 +688,11 @@
   "history.convertTo": "Конвертировать в",
   "history.best": "Лучшее",
   "history.type.download": "Скачивание",
-  "history.type.convert": "Конвертация"
+  "history.type.convert": "Конвертация",
+  "dl.batchListening": "Автоопределение скопированных ссылок из буфера обмена...",
+  "dl.batchLinksCount": "Собрано ссылок: {{count}}",
+  "dl.clearBatch": "Очистить все",
+  "toast.linkAutoDetected": "Ссылка автоматически добавлена из буфера обмена",
+  "toast.linksAutoDetected": "Автоматически добавлено ссылок: {{count}}",
+  "dl.linkAdded": "Ссылка добавлена"
 }

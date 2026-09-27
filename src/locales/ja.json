@@ -688,5 +688,11 @@
   "history.convertTo": "変換先",
   "history.best": "最高",
   "history.type.download": "ダウンロード",
-  "history.type.convert": "変換"
+  "history.type.convert": "変換",
+  "dl.batchListening": "クリップボードからコピーされたリンクを自動検出中...",
+  "dl.batchLinksCount": "{{count}} 件のリンクを収集",
+  "dl.clearBatch": "すべてクリア",
+  "toast.linkAutoDetected": "クリップボードからリンクが自動追加されました",
+  "toast.linksAutoDetected": "{{count}} 件のリンクがクリップボードから自動追加されました",
+  "dl.linkAdded": "リンク追加"
 }

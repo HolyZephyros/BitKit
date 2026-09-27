@@ -688,5 +688,11 @@
   "history.convertTo": "Dönüştür:",
   "history.best": "En İyi",
   "history.type.download": "İndirme",
-  "history.type.convert": "Çevirme"
+  "history.type.convert": "Çevirme",
+  "dl.batchListening": "Panodan kopyalanan linkler otomatik algılanıyor...",
+  "dl.batchLinksCount": "{{count}} link toplandı",
+  "dl.clearBatch": "Tümünü Temizle",
+  "toast.linkAutoDetected": "Link panodan otomatik eklendi",
+  "toast.linksAutoDetected": "{{count}} link panodan otomatik eklendi",
+  "dl.linkAdded": "Link Eklendi"
 }
