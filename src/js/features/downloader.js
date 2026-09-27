@@ -330,15 +330,13 @@ function isValidUrl(str) {
 }
 
 async function analyzeUrl() {
+  const batchList = document.getElementById('batchLinkList');
   let lines = [];
   if (typeof window.getBatchUrls === 'function' && window.getBatchUrls().length > 0) {
     lines.push(...window.getBatchUrls());
-  } else {
-    const batchList = document.getElementById('batchLinkList');
-    if (batchList && batchList.style.display !== 'none') {
-      const pills = batchList.querySelectorAll('.batch-pill .batch-url-text');
-      pills.forEach(p => lines.push(p.textContent));
-    }
+  } else if (batchList && batchList.style.display !== 'none') {
+    const pills = batchList.querySelectorAll('.batch-pill .batch-url-text, .batch-pill span');
+    pills.forEach(p => lines.push(p.textContent));
   }
 
   const urlInput = document.getElementById('urlInput');
@@ -381,7 +379,8 @@ async function analyzeUrl() {
       if (loadingText) loadingText.textContent = t('dl.analyzing') || "URL analiz ediliyor...";
       let url = lines[0];
       if (url.includes('youtube.com/list=')) url = url.replace('youtube.com/list=', 'youtube.com/playlist?list=');
-      if (batchList && batchList.style.display === 'none') {
+      const isBatch = (typeof window.isBatchModeActive === 'function' && window.isBatchModeActive()) || (batchList && batchList.style.display !== 'none');
+      if (!isBatch) {
         urlInput.value = url;
       }
 
