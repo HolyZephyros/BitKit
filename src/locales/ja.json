@@ -329,7 +329,7 @@
   "toast.confirmYes": "はい",
   "toast.downloadFailed": "ダウンロードに失敗しました (コード: {{code}})",
   "toast.analysisFailed": "解析に失敗しました",
-  "toast.electronRequired": "Electron IPC が必要です",
+  "toast.ipcRequired": "デスクトップ IPC が必要です",
   "toast.addedToQueue": "キューに追加されました: {{title}}",
   "toast.alreadyInQueue": "この動画はすでにキューにあります",
   "toast.analyzeFirst": "まずURLを解析してください",

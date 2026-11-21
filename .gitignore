@@ -3,6 +3,7 @@ node_modules/
 dist/
 *.log
 resources/bin/*.exe
+resources/bin/*.dll
 resources/bin/*.json
 !resources/bin/README.md
 
@@ -24,8 +25,10 @@ scratch/
 cookies.txt
 *.cookies
 
-# Electron build artifacts
+# Build artifacts
 out/
 release/
 *.nsis
 *.blockmap
+src-tauri/target/
+src-tauri/gen/

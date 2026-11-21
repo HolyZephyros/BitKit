@@ -329,7 +329,7 @@
   "toast.confirmYes": "Да",
   "toast.downloadFailed": "Сбой загрузки (код: {{code}})",
   "toast.analysisFailed": "Сбой анализа",
-  "toast.electronRequired": "Требуется Electron IPC",
+  "toast.ipcRequired": "Требуется настольный IPC",
   "toast.addedToQueue": "Добавлено в очередь: {{title}}",
   "toast.alreadyInQueue": "Это видео уже в очереди",
   "toast.analyzeFirst": "Сначала проанализируйте URL",

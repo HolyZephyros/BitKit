@@ -329,7 +329,7 @@
   "toast.confirmYes": "Tak",
   "toast.downloadFailed": "Pobieranie nie powiodło się (kod: {{code}})",
   "toast.analysisFailed": "Błąd analizy",
-  "toast.electronRequired": "Wymagany moduł Electron IPC",
+  "toast.ipcRequired": "Wymagany moduł IPC pulpitu",
   "toast.addedToQueue": "Dodano do kolejki: {{title}}",
   "toast.alreadyInQueue": "Ten plik wideo jest już w kolejce",
   "toast.analyzeFirst": "Najpierw przeanalizuj URL",

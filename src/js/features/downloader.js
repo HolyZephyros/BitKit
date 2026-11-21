@@ -289,7 +289,9 @@ function initDownloader() {
     if (window.isBatchModeActive && window.isBatchModeActive()) return;
 
     try {
-      const text = await navigator.clipboard.readText();
+      const text = window.bitkit?.clipboard?.readText
+        ? await window.bitkit.clipboard.readText()
+        : await navigator.clipboard.readText();
       const urlInput = document.getElementById('urlInput');
       if (text && urlInput && !urlInput.value && isValidUrl(text) && text !== lastClipboardUrl) {
         lastClipboardUrl = text;
@@ -367,7 +369,7 @@ async function analyzeUrl() {
   if (!window.bitkit) {
     setTimeout(() => {
       loadingEl.style.display = 'none';
-      showToast(t('toast.electronRequired'), 'warning');
+      showToast(t('toast.ipcRequired'), 'warning');
     }, 1000);
     return;
   }

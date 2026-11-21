@@ -1009,6 +1009,29 @@ function renderConverterUI() {
 function setupDragAndDrop() {
   const dropZone = document.getElementById('dropZone');
 
+  const addDroppedPaths = (paths) => {
+    if (!paths || paths.length === 0) return;
+    console.log("[Converter] Dropped files:", paths);
+
+    document.getElementById('convSettingsPanel').style.display = 'block';
+    convState.hasFiles = true;
+
+    paths.forEach(p => {
+      if (!convState.paths.includes(p)) convState.paths.push(p);
+    });
+
+    populateFormatDropdown();
+    renderFileList();
+    probeFiles(paths);
+  };
+
+  window.addEventListener('bitkit:files-dropped', (e) => {
+    const paths = e.detail?.paths;
+    if (Array.isArray(paths) && paths.length > 0) {
+      addDroppedPaths(paths);
+    }
+  });
+
   if (dropZone) {
     dropZone.addEventListener('dragenter', (e) => {
       e.preventDefault();
@@ -1039,18 +1062,7 @@ function setupDragAndDrop() {
         paths = filesArr.map(f => f.path).filter(p => p);
       }
 
-      console.log("[Converter] Dropped files:", paths);
-
-      document.getElementById('convSettingsPanel').style.display = 'block';
-      convState.hasFiles = true;
-
-      paths.forEach(p => {
-        if (!convState.paths.includes(p)) convState.paths.push(p);
-      });
-
-      populateFormatDropdown();
-      renderFileList();
-      probeFiles(paths);
+      addDroppedPaths(paths);
     });
 
     dropZone.addEventListener('click', async () => {

@@ -17,10 +17,10 @@
 <body>
 <div class="app-shell panel-hidden" id="appShell">
 <!-- ============ TITLEBAR ============ -->
-<header class="titlebar">
-<div class="titlebar-left">
-<img alt="BitKit" class="titlebar-logo" src="assets/icons/icon.png"/>
-<span class="titlebar-title">BitKit</span>
+<header class="titlebar" data-tauri-drag-region>
+<div class="titlebar-left" data-tauri-drag-region>
+<img alt="BitKit" class="titlebar-logo" data-tauri-drag-region draggable="false" src="assets/icons/icon.png"/>
+<span class="titlebar-title" data-tauri-drag-region>BitKit</span>
 </div>
 <div class="titlebar-controls">
 <button class="titlebar-btn" data-i18n-tip="titlebar.minimize" id="btnMinimize">
@@ -153,6 +153,7 @@
 </style>
 <!-- Scripts -->
 <script src="js/i18n.js"></script>
+<script src="js/utils/tauri-bridge.js"></script>
 <script src="js/utils/ipc.js"></script>
 <script src="js/utils/formatters.js"></script>
 <!-- Core -->

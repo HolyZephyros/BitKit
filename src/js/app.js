@@ -1,6 +1,6 @@
 
 async function loadViews() {
-  const views = ['downloader', 'converter', 'editor', 'history', 'settings'];
+  const views = ['downloader', 'converter', 'history', 'settings'];
   const mainContent = document.getElementById('mainContent');
   const parser = new DOMParser();
 

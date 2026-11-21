@@ -329,7 +329,7 @@
   "toast.confirmYes": "Sí",
   "toast.downloadFailed": "Descarga fallida (código: {{code}})",
   "toast.analysisFailed": "Análisis fallido",
-  "toast.electronRequired": "Se requiere Electron IPC",
+  "toast.ipcRequired": "Se requiere IPC de escritorio",
   "toast.addedToQueue": "Añadido a la cola: {{title}}",
   "toast.alreadyInQueue": "Este video ya está en la cola",
   "toast.analyzeFirst": "Analiza una URL primero",

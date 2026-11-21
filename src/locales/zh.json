@@ -329,7 +329,7 @@
   "toast.confirmYes": "是",
   "toast.downloadFailed": "下载失败 (代码: {{code}})",
   "toast.analysisFailed": "解析失败",
-  "toast.electronRequired": "需要 Electron IPC",
+  "toast.ipcRequired": "需要桌面 IPC",
   "toast.addedToQueue": "已加入队列：{{title}}",
   "toast.alreadyInQueue": "此视频已在队列中",
   "toast.analyzeFirst": "请先解析 URL",

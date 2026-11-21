@@ -329,7 +329,7 @@
   "toast.confirmYes": "Yes",
   "toast.downloadFailed": "Download failed (code: {{code}})",
   "toast.analysisFailed": "Analysis failed",
-  "toast.electronRequired": "Electron IPC required",
+  "toast.ipcRequired": "Desktop IPC required",
   "toast.addedToQueue": "Added to queue: {{title}}",
   "toast.alreadyInQueue": "This video is already in queue",
   "toast.analyzeFirst": "Analyze a URL first",

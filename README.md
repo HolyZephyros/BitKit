@@ -5,14 +5,15 @@
 <h1 align="center">BitKit</h1>
 
 <p align="center">
-  <b>Advanced media downloader and converter powered by yt-dlp & FFmpeg</b>
+  <b>Lightweight, native Rust media downloader & converter powered by Tauri v2, yt-dlp & FFmpeg</b>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-blue?logo=windows&logoColor=white" alt="Windows">
-  <img src="https://img.shields.io/badge/Electron-41-47848F?logo=electron&logoColor=white" alt="Electron">
+  <img src="https://img.shields.io/badge/Rust-Native-DEA584?logo=rust&logoColor=black" alt="Rust">
+  <img src="https://img.shields.io/badge/Tauri-v2-24C8DB?logo=tauri&logoColor=white" alt="Tauri v2">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License">
-  <img src="https://img.shields.io/badge/Version-1.2.1-2A9D8F" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.0.0-2A9D8F" alt="Version">
 </p>
 
 <p align="center">
@@ -27,14 +28,16 @@
 
 ## 🎯 What is BitKit?
 
-BitKit is a modern, privacy-focused desktop application for downloading, converting, and processing media files. It wraps the power of [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [FFmpeg](https://github.com/FFmpeg/FFmpeg) behind a sleek, intuitive interface — no command line required.
+BitKit is a fast, lightweight, privacy-focused Windows desktop application built with **Rust** and **Tauri v2** for downloading, converting, and processing media files. It wraps the full power of [yt-dlp](https://github.com/yt-dlp/yt-dlp) and [FFmpeg](https://github.com/FFmpeg/FFmpeg) behind a sleek, modern interface — no command line required.
 
+---
 
 ## ✨ Features
 
 ### 📥 Downloader
 - Download video & audio from **1000+ websites** (YouTube, Twitter/X, Instagram, TikTok, Reddit, and more)
-- **Batch download** and full **playlist support**
+- **Batch link mode** with background **clipboard auto-detection** & corner notification popup
+- Full **playlist support** and live **global bandwidth rate limiting** via built-in Tokio Rust proxy
 - Choose exact **video quality** (up to 8K), **audio bitrate**, and **output format**
 - **Trim before download** — set start/end timestamps
 - **Cookie support** for age-restricted or private content
@@ -42,9 +45,9 @@ BitKit is a modern, privacy-focused desktop application for downloading, convert
 
 ### 🔄 Converter
 - Convert between all major formats: **MP4, MKV, WebM, AVI, MOV, MP3, FLAC, WAV, Opus, AAC** and more
-- Full **codec control** (H.264, H.265/HEVC, VP9, AV1) with **hardware acceleration** (NVENC, QSV, AMF)
+- Full **codec control** (H.264, H.265/HEVC, VP9, AV1) with **hardware acceleration** (NVENC, QSV, AMF) and automatic CPU fallback
 - Adjustable **CRF quality**, bitrate, resolution, FPS, and audio sample rate
-- Drag & drop files directly into the app
+- Native OS **drag & drop** directly into the app
 
 ### ⚡ Quick Templates (30+ Presets)
 One-click presets for common tasks:
@@ -62,6 +65,7 @@ Templates can be **combined** — stack multiple filters in a single pass.
 ### ⚙️ General
 - Full **download & conversion history**
 - **Multi-language** support (English, Turkish, Spanish, German, French, Russian, Italian, Portuguese, Polish, Japanese, Chinese)
+- **Zero-UAC current-user installer** (LZMA compressed NSIS) & seamless **in-app auto-updater** with automatic relaunch
 - Built-in **yt-dlp & FFmpeg updater**
 - Custom output directories and filename templates
 
@@ -95,20 +99,23 @@ Templates can be **combined** — stack multiple filters in a single pass.
 
 ### Download Release
 1. Go to the [Releases](../../releases) page
-2. Download the latest `.exe` installer
-3. Run the installer — BitKit will automatically download the required binaries on first launch
+2. Download the latest Windows `.exe` installer
+3. Run the installer — installs for the current user with **no Administrator (UAC) prompt** and all media tools bundled
 
 ### Build from Source
+
+**Prerequisites:** [Rust toolchain](https://rustup.rs/) (`rustc` & `cargo`), [Node.js](https://nodejs.org/) (for Tauri CLI), and WebView2 (pre-installed on Windows 10/11).
+
 ```bash
 git clone https://github.com/HolyZephyros/BitKit.git
 cd BitKit
 npm install
 
-# Download required binaries (yt-dlp & ffmpeg)
-.\scripts\fetch-bins.ps1
+# Download required binaries (yt-dlp, Deno & shared FFmpeg)
+npm run fetch-bins
 
-npm run dev       # Development
-npm run build     # Build distributable
+npm run dev       # Development mode (hot reload)
+npm run build     # Build release binary + NSIS installer
 ```
 
 ---
@@ -117,10 +124,10 @@ npm run build     # Build distributable
 
 | Layer | Technology |
 |---|---|
-| **Framework** | [Electron 41](https://github.com/electron/electron) |
-| **Media Engine** | [yt-dlp](https://github.com/yt-dlp/yt-dlp) + [FFmpeg](https://github.com/FFmpeg/FFmpeg) |
-| **Frontend** | Vanilla HTML/CSS/JS |
-| **Build** | [electron-builder](https://www.electron.build/) |
+| **Backend & Core** | [Rust](https://www.rust-lang.org/) + [Tauri v2](https://v2.tauri.app/) ([Tokio](https://tokio.rs/) async runtime) |
+| **Media Engine** | [yt-dlp](https://github.com/yt-dlp/yt-dlp) + [FFmpeg](https://github.com/FFmpeg/FFmpeg) (shared GPL) + [Deno](https://deno.com/) |
+| **Frontend** | Vanilla HTML/CSS/JS (Windows WebView2) |
+| **Packaging** | Tauri Bundler (NSIS LZMA, current-user) |
 
 ---
 

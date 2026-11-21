@@ -329,7 +329,7 @@
   "toast.confirmYes": "Evet",
   "toast.downloadFailed": "İndirme başarısız (kod: {{code}})",
   "toast.analysisFailed": "Analiz başarısız",
-  "toast.electronRequired": "Electron IPC gerekli",
+  "toast.ipcRequired": "Masaüstü IPC gerekli",
   "toast.addedToQueue": "Sıraya eklendi: {{title}}",
   "toast.alreadyInQueue": "Bu video zaten sırada",
   "toast.analyzeFirst": "Önce bir URL analiz edin",

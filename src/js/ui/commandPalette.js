@@ -9,7 +9,9 @@ const commands = [
   { id: 'paste-url', labelKey: 'dl.analyze', icon: '📋', action: async () => {
     navigateTo('downloader');
     try {
-      const text = await navigator.clipboard.readText();
+      const text = window.bitkit?.clipboard?.readText
+        ? await window.bitkit.clipboard.readText()
+        : await navigator.clipboard.readText();
       document.getElementById('urlInput').value = text;
       analyzeUrl();
     } catch(e) {}
@@ -113,7 +115,10 @@ function initKeyboardShortcuts() {
     if (e.ctrlKey && e.key === 'v' && state.currentPage === 'downloader') {
       const activeEl = document.activeElement;
       if (!activeEl || activeEl === document.body) {
-        navigator.clipboard.readText().then(text => {
+        const readClip = window.bitkit?.clipboard?.readText
+          ? window.bitkit.clipboard.readText()
+          : navigator.clipboard.readText();
+        readClip.then(text => {
           if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
             document.getElementById('urlInput').value = text;
             analyzeUrl();
