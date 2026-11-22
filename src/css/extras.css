@@ -389,3 +389,90 @@ kbd {
 }
 
 .cookies-howto-warning svg { flex-shrink: 0; color: var(--error); }
+
+/* ===== Discord-Style Auto-Updater Overlay ===== */
+.bitkit-update-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(7, 7, 12, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalOverlayIn 160ms ease-out;
+}
+
+.bitkit-update-card {
+  width: 364px;
+  max-width: 90vw;
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 28px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: modalContentIn 200ms ease-out;
+}
+
+.bitkit-update-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 14px;
+  user-select: none;
+}
+
+.bitkit-update-title {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.bitkit-update-subtitle {
+  margin: 0 0 18px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.bitkit-update-bar-track {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--bg-elevated);
+  overflow: hidden;
+  position: relative;
+}
+
+.bitkit-update-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: var(--radius-full);
+  background: var(--accent-teal-hover);
+  transition: width 0.25s ease;
+}
+
+.bitkit-update-bar-fill.indeterminate {
+  width: 38% !important;
+  position: relative;
+  animation: bitkitUpdateSlide 1.25s ease-in-out infinite;
+}
+
+@keyframes bitkitUpdateSlide {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(280%); }
+}
+
+.bitkit-update-meta {
+  margin-top: 10px;
+  min-height: 18px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}

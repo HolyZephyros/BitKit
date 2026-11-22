@@ -723,5 +723,11 @@
   "backend.jsonParseError": "データ解析エラー: {{err}}",
   "backend.timeout60": "60秒でタイムアウトしました。",
   "backend.ytdlpError": "yt-dlp エラー (コード {{code}}): {{err}}",
-  "backend.ytdlpExecError": "yt-dlp の起動に失敗しました: {{err}}"
+  "backend.ytdlpExecError": "yt-dlp の起動に失敗しました: {{err}}",
+  "updater.modalTitle": "BitKit {{version}} をアップデート中",
+  "updater.downloadingSubtitle": "アップデートをダウンロード中です。アプリを閉じないでください...",
+  "updater.installingTitle": "BitKit {{version}} をインストール中",
+  "updater.installingSubtitle": "しばらくお待ちください。完了後に自動で再起動します...",
+  "updater.restartingSubtitle": "BitKit を再起動しています...",
+  "updater.later": "あとで"
 }

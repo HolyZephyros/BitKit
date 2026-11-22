@@ -723,5 +723,11 @@
   "backend.jsonParseError": "Veri ayrıştırma hatası: {{err}}",
   "backend.timeout60": "İşlem 60 saniyede zaman aşımına uğradı.",
   "backend.ytdlpError": "yt-dlp hatası (kod {{code}}): {{err}}",
-  "backend.ytdlpExecError": "yt-dlp başlatılamadı: {{err}}"
+  "backend.ytdlpExecError": "yt-dlp başlatılamadı: {{err}}",
+  "updater.modalTitle": "BitKit {{version}} Güncelleniyor",
+  "updater.downloadingSubtitle": "Güncelleme indiriliyor, lütfen uygulamayı kapatmayın...",
+  "updater.installingTitle": "BitKit {{version}} Kuruluyor",
+  "updater.installingSubtitle": "Lütfen bekleyin, kurulum bitince otomatik yeniden açılacak...",
+  "updater.restartingSubtitle": "BitKit yeniden başlatılıyor...",
+  "updater.later": "Sonra"
 }

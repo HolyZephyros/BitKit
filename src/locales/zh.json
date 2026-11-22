@@ -723,5 +723,11 @@
   "backend.jsonParseError": "数据解析错误：{{err}}",
   "backend.timeout60": "操作在 60 秒后超时。",
   "backend.ytdlpError": "yt-dlp 错误 (代码 {{code}})：{{err}}",
-  "backend.ytdlpExecError": "无法启动 yt-dlp：{{err}}"
+  "backend.ytdlpExecError": "无法启动 yt-dlp：{{err}}",
+  "updater.modalTitle": "正在更新 BitKit {{version}}",
+  "updater.downloadingSubtitle": "正在下载更新，请勿关闭应用...",
+  "updater.installingTitle": "正在安装 BitKit {{version}}",
+  "updater.installingSubtitle": "请稍候，安装完成后 BitKit 将自动重启...",
+  "updater.restartingSubtitle": "正在重启 BitKit...",
+  "updater.later": "稍后"
 }

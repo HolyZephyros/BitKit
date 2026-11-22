@@ -103,7 +103,7 @@
     updater: {
       checkApp: () => invoke('updater_check_app'),
       downloadApp: () => invoke('updater_download_app'),
-      installApp: () => invoke('updater_install_app'),
+      installApp: (ui) => invoke('updater_install_app', { ui: ui || null }),
       onAppUpdateProgress: (cb) => subscribeEvent('app:updateProgress', cb),
       onAppUpdateDownloaded: (cb) => subscribeEvent('app:updateDownloaded', cb),
       onAppUpdateError: (cb) => subscribeEvent('app:updateError', cb),

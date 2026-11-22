@@ -723,5 +723,11 @@
   "backend.jsonParseError": "Daten-Analysefehler: {{err}}",
   "backend.timeout60": "Zeitüberschreitung nach 60 Sekunden.",
   "backend.ytdlpError": "yt-dlp-Fehler (Code {{code}}): {{err}}",
-  "backend.ytdlpExecError": "yt-dlp konnte nicht gestartet werden: {{err}}"
+  "backend.ytdlpExecError": "yt-dlp konnte nicht gestartet werden: {{err}}",
+  "updater.modalTitle": "BitKit {{version}} wird aktualisiert",
+  "updater.downloadingSubtitle": "Update wird heruntergeladen, bitte schließen Sie die App nicht...",
+  "updater.installingTitle": "BitKit {{version}} wird installiert",
+  "updater.installingSubtitle": "Bitte warten, BitKit startet danach automatisch neu...",
+  "updater.restartingSubtitle": "BitKit wird neu gestartet...",
+  "updater.later": "Später"
 }

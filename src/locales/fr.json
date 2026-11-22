@@ -723,5 +723,11 @@
   "backend.jsonParseError": "Erreur d’analyse des données : {{err}}",
   "backend.timeout60": "Délai d’attente dépassé après 60 secondes.",
   "backend.ytdlpError": "Erreur yt-dlp (code {{code}}) : {{err}}",
-  "backend.ytdlpExecError": "Impossible de lancer yt-dlp : {{err}}"
+  "backend.ytdlpExecError": "Impossible de lancer yt-dlp : {{err}}",
+  "updater.modalTitle": "Mise à jour de BitKit {{version}}",
+  "updater.downloadingSubtitle": "Téléchargement de la mise à jour, veuillez ne pas fermer l'application...",
+  "updater.installingTitle": "Installation de BitKit {{version}}",
+  "updater.installingSubtitle": "Veuillez patienter, BitKit redémarrera automatiquement...",
+  "updater.restartingSubtitle": "Redémarrage de BitKit...",
+  "updater.later": "Plus tard"
 }

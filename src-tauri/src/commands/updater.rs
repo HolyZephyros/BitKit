@@ -1,15 +1,55 @@
-use crate::paths::{get_bin_path, hidden_std_command, hidden_tokio_command, user_data_dir};
+use crate::paths::{
+    acquire_bin_sync_lock, atomic_replace_file, get_bin_path, hidden_std_command,
+    hidden_tokio_command, is_valid_pe_file, user_data_dir, MIN_VALID_PE_SIZE,
+};
 use crate::state::{AppState, CachedRelease};
 use futures_util::StreamExt;
 use regex::Regex;
+use serde::Deserialize;
 use serde_json::{json, Value};
+use std::collections::HashSet;
 use std::fs::{self, File};
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::Path;
 use std::process::Stdio;
 use std::sync::atomic::Ordering;
 use std::time::{Duration, Instant};
 use tauri::{AppHandle, Emitter, State};
+
+const UPDATER_ICON_PNG: &[u8] = include_bytes!("../../icons/128x128.png");
+
+#[derive(Debug, Deserialize, Default)]
+pub struct UpdateUiStrings {
+    pub version: Option<String>,
+    pub title: Option<String>,
+    pub subtitle: Option<String>,
+    pub restarting: Option<String>,
+}
+
+fn encode_base64_utf8(input: &str) -> String {
+    const TABLE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let bytes = input.as_bytes();
+    let mut out = String::with_capacity(((bytes.len() + 2) / 3) * 4);
+    for chunk in bytes.chunks(3) {
+        let b0 = chunk[0] as u32;
+        let b1 = if chunk.len() > 1 { chunk[1] as u32 } else { 0 };
+        let b2 = if chunk.len() > 2 { chunk[2] as u32 } else { 0 };
+        let triple = (b0 << 16) | (b1 << 8) | b2;
+        out.push(TABLE[((triple >> 18) & 0x3F) as usize] as char);
+        out.push(TABLE[((triple >> 12) & 0x3F) as usize] as char);
+        out.push(if chunk.len() > 1 {
+            TABLE[((triple >> 6) & 0x3F) as usize] as char
+        } else {
+            '='
+        });
+        out.push(if chunk.len() > 2 {
+            TABLE[(triple & 0x3F) as usize] as char
+        } else {
+            '='
+        });
+    }
+    out
+}
 
 /// Cleans up leftover pending-update.json & installer files if the app is already on that version or newer.
 pub fn cleanup_stale_pending_update(app: &AppHandle) {
@@ -29,15 +69,11 @@ pub fn cleanup_stale_pending_update(app: &AppHandle) {
 }
 
 fn validate_pe_installer(path: &Path) -> Result<(), String> {
-    let meta = fs::metadata(path).map_err(|_| "Downloaded installer not found".to_string())?;
-    if meta.len() < 1_000_000 {
-        return Err("Downloaded installer is incomplete or corrupted".to_string());
+    if !path.exists() {
+        return Err("Downloaded installer not found".to_string());
     }
-    let mut f = File::open(path).map_err(|e| e.to_string())?;
-    let mut magic = [0u8; 2];
-    f.read_exact(&mut magic).map_err(|e| e.to_string())?;
-    if &magic != b"MZ" {
-        return Err("Downloaded file is not a valid Windows installer".to_string());
+    if !is_valid_pe_file(path, 1_000_000) {
+        return Err("Downloaded installer is incomplete or corrupted".to_string());
     }
     Ok(())
 }
@@ -344,6 +380,10 @@ pub async fn updater_download_app(app: AppHandle, state: State<'_, AppState>) ->
             }
         }
         drop(file);
+        if total > 0 && transferred != total {
+            let _ = fs::remove_file(&tmp_path);
+            return Err("Downloaded installer is incomplete (connection interrupted)".to_string());
+        }
         if let Err(err) = validate_pe_installer(&tmp_path) {
             let _ = fs::remove_file(&tmp_path);
             return Err(err);
@@ -376,7 +416,11 @@ pub async fn updater_download_app(app: AppHandle, state: State<'_, AppState>) ->
 }
 
 #[tauri::command]
-pub fn updater_install_app(app: AppHandle, state: State<'_, AppState>) -> Value {
+pub fn updater_install_app(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ui: Option<UpdateUiStrings>,
+) -> Value {
     if cfg!(debug_assertions) {
         let _ = app.emit("app:updateError", "DEV_MODE_ERROR");
         return json!({ "success": false, "error": "DEV_MODE_ERROR" });
@@ -387,10 +431,17 @@ pub fn updater_install_app(app: AppHandle, state: State<'_, AppState>) -> Value 
     }
 
     let flag_path = user_data_dir().join("pending-update.json");
-    let installer_path = fs::read_to_string(&flag_path)
+    let flag_json = fs::read_to_string(&flag_path)
         .ok()
-        .and_then(|c| serde_json::from_str::<Value>(&c).ok())
+        .and_then(|c| serde_json::from_str::<Value>(&c).ok());
+
+    let installer_path = flag_json
+        .as_ref()
         .and_then(|v| v.get("installerPath").and_then(|p| p.as_str()).map(String::from));
+    let flag_version = flag_json
+        .as_ref()
+        .and_then(|v| v.get("version").and_then(|p| p.as_str()).map(String::from))
+        .unwrap_or_default();
 
     let Some(inst) = installer_path else {
         state.app_update_installing.store(false, Ordering::SeqCst);
@@ -415,6 +466,33 @@ pub fn updater_install_app(app: AppHandle, state: State<'_, AppState>) -> Value 
     // Cleanly stop active downloads, conversions, proxy, clipboard watcher & popup before restart
     crate::cleanup_all(&app);
 
+    let ui_cfg = ui.unwrap_or_default();
+    let ver_label = ui_cfg
+        .version
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or(flag_version);
+    let title_str = ui_cfg
+        .title
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| {
+            if ver_label.is_empty() {
+                "Updating BitKit".to_string()
+            } else {
+                format!("Installing BitKit {}", ver_label)
+            }
+        });
+    let sub_str = ui_cfg
+        .subtitle
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| "Please wait, BitKit will restart automatically...".to_string());
+    let restart_str = ui_cfg
+        .restarting
+        .filter(|s| !s.trim().is_empty())
+        .unwrap_or_else(|| "Restarting BitKit...".to_string());
+
+    let icon_path = std::env::temp_dir().join("bitkit_updater_icon.png");
+    let _ = fs::write(&icon_path, UPDATER_ICON_PNG);
+
     let current_pid = std::process::id();
     let current_exe = std::env::current_exe()
         .map(|p| p.to_string_lossy().to_string())
@@ -422,46 +500,229 @@ pub fn updater_install_app(app: AppHandle, state: State<'_, AppState>) -> Value 
     let local_installed_exe = dirs::data_local_dir()
         .map(|d| d.join("BitKit").join("bitkit.exe").to_string_lossy().to_string())
         .unwrap_or_default();
+    let user_bin_dir = user_data_dir().join("bin").to_string_lossy().to_string();
 
     let escape_ps = |s: &str| s.replace('\'', "''");
     let helper_script = format!(
-        r#"$ErrorActionPreference = 'SilentlyContinue'
+        r##"$ErrorActionPreference = 'SilentlyContinue'
 $oldPid = {pid}
 $installer = '{installer}'
 $currentExe = '{current_exe}'
 $localExe = '{local_exe}'
+$userBinDir = '{user_bin_dir}'
+$iconPath = '{icon_path}'
 $scriptSelf = $MyInvocation.MyCommand.Path
 
-# 1. Wait cleanly for old BitKit process to exit (prevents file lock errors)
-for ($i = 0; $i -lt 100; $i++) {{
-    if (-not (Get-Process -Id $oldPid -ErrorAction SilentlyContinue)) {{ break }}
-    if ($i -eq 65) {{ Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue }}
-    Start-Sleep -Milliseconds 150
-}}
-Start-Sleep -Milliseconds 350
+$titleText = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{title_b64}'))
+$subText = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{sub_b64}'))
+$restartText = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{restart_b64}'))
 
-# 2. Run silent current-user NSIS installer (zero UAC prompt, zero wizard clicks)
-if (Test-Path $installer) {{
-    Start-Process -FilePath $installer -ArgumentList '/S' -Wait
-    Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue
-}}
+$mutexCreated = $false
+$updateMutex = $null
+try {{
+    $updateMutex = New-Object System.Threading.Mutex($true, 'Local\BitKit_UpdateInProgress_Mutex', [ref]$mutexCreated)
+}} catch {{}}
 
-# 3. Seamless auto-relaunch (Discord / Steam style)
-Start-Sleep -Milliseconds 300
-if ($currentExe -and (Test-Path $currentExe)) {{
-    Start-Process -FilePath $currentExe
-}} elseif ($localExe -and (Test-Path $localExe)) {{
-    Start-Process -FilePath $localExe
+function Release-UpdateLock {{
+    if ($script:updateMutex) {{
+        if ($script:mutexCreated) {{
+            try {{ $script:updateMutex.ReleaseMutex() }} catch {{}}
+        }}
+        try {{ $script:updateMutex.Dispose() }} catch {{}}
+        $script:updateMutex = $null
+    }}
 }}
 
-if ($scriptSelf -and (Test-Path $scriptSelf)) {{
-    Remove-Item -Path $scriptSelf -Force -ErrorAction SilentlyContinue
+function Stop-BitKitBinProcesses {{
+    $names = @('ffmpeg', 'ffprobe', 'yt-dlp', 'deno')
+    foreach ($n in $names) {{
+        Get-Process -Name $n -ErrorAction SilentlyContinue | ForEach-Object {{
+            try {{
+                if ($_.Path -and $_.Path.StartsWith($userBinDir, [System.StringComparison]::OrdinalIgnoreCase)) {{
+                    Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
+                }}
+            }} catch {{}}
+        }}
+    }}
 }}
-"#,
+
+function Resolve-TargetExe {{
+    if ($currentExe -and (Test-Path $currentExe)) {{ return $currentExe }}
+    if ($localExe -and (Test-Path $localExe)) {{ return $localExe }}
+    return $null
+}}
+
+$splashShown = $false
+try {{
+    Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+    $xaml = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        Title="BitKit Updater" Width="364" Height="212"
+        WindowStartupLocation="CenterScreen" WindowStyle="None"
+        AllowsTransparency="True" Background="Transparent" Topmost="True"
+        ResizeMode="NoResize" ShowInTaskbar="True">
+  <Border Background="#0E0E16" BorderBrush="#262638" BorderThickness="1" CornerRadius="14" Margin="8">
+    <Border.Effect>
+      <DropShadowEffect Color="#000000" BlurRadius="18" ShadowDepth="0" Opacity="0.65"/>
+    </Border.Effect>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="26,20">
+      <Image Name="LogoImg" Width="48" Height="48" HorizontalAlignment="Center" Margin="0,0,0,12" RenderOptions.BitmapScalingMode="HighQuality"/>
+      <TextBlock Name="TitleBlock" Text="BitKit" Foreground="#E2E8F0" FontFamily="Segoe UI" FontSize="15" FontWeight="Bold" HorizontalAlignment="Center" TextAlignment="Center"/>
+      <TextBlock Name="SubBlock" Text="Updating..." Foreground="#94A3B8" FontFamily="Segoe UI" FontSize="12" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,6,0,18"/>
+      <Border Width="272" Height="6" CornerRadius="3" Background="#1C1C2C" ClipToBounds="True">
+        <ProgressBar Name="Bar" Width="272" Height="6" IsIndeterminate="True" Foreground="#0891B2" Background="#1C1C2C" BorderThickness="0"/>
+      </Border>
+    </StackPanel>
+  </Border>
+</Window>
+"@
+    $reader = New-Object System.Xml.XmlNodeReader ([xml]$xaml)
+    $win = [Windows.Markup.XamlReader]::Load($reader)
+    $win.FindName('TitleBlock').Text = $titleText
+    $subBlock = $win.FindName('SubBlock')
+    $subBlock.Text = $subText
+
+    if ($iconPath -and (Test-Path $iconPath)) {{
+        try {{
+            $bmp = New-Object System.Windows.Media.Imaging.BitmapImage
+            $bmp.BeginInit()
+            $bmp.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+            $bmp.UriSource = New-Object Uri($iconPath)
+            $bmp.EndInit()
+            $bmp.Freeze()
+            $win.FindName('LogoImg').Source = $bmp
+        }} catch {{}}
+    }}
+
+    $win.Add_MouseLeftButtonDown({{ try {{ $win.DragMove() }} catch {{}} }})
+
+    $state = @{{
+        Step = 0
+        Ticks = 0
+        InstProc = $null
+        NewProc = $null
+    }}
+
+    $timer = New-Object System.Windows.Threading.DispatcherTimer
+    $timer.Interval = [TimeSpan]::FromMilliseconds(100)
+    $timer.Add_Tick({{
+        $state.Ticks++
+        switch ($state.Step) {{
+            0 {{
+                # Wait cleanly for old BitKit process to exit
+                $alive = Get-Process -Id $oldPid -ErrorAction SilentlyContinue
+                if (-not $alive) {{
+                    Stop-BitKitBinProcesses
+                    $state.Step = 1
+                    $state.Ticks = 0
+                }} elseif ($state.Ticks -ge 60) {{
+                    Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue
+                    Stop-BitKitBinProcesses
+                    $state.Step = 1
+                    $state.Ticks = 0
+                }}
+            }}
+            1 {{
+                # Wait 200ms after exit so file handles settle, then run silent NSIS installer
+                if ($state.Ticks -lt 2) {{ return }}
+                if ($installer -and (Test-Path $installer)) {{
+                    $state.InstProc = Start-Process -FilePath $installer -ArgumentList '/S' -PassThru
+                    $state.Step = 2
+                    $state.Ticks = 0
+                }} else {{
+                    $state.Step = 3
+                    $state.Ticks = 0
+                }}
+            }}
+            2 {{
+                # Wait for silent NSIS installer without blocking WPF animations
+                if ($state.InstProc -and -not $state.InstProc.HasExited) {{ return }}
+                if ($installer -and (Test-Path $installer)) {{
+                    Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue
+                }}
+                $subBlock.Text = $restartText
+                Release-UpdateLock
+                $state.Step = 3
+                $state.Ticks = 0
+            }}
+            3 {{
+                # Launch updated BitKit cleanly after mutex release
+                if ($state.Ticks -lt 2) {{ return }}
+                Release-UpdateLock
+                $exe = Resolve-TargetExe
+                if ($exe) {{
+                    $state.NewProc = Start-Process -FilePath $exe -PassThru
+                    $state.Step = 4
+                    $state.Ticks = 0
+                }} else {{
+                    $timer.Stop()
+                    $win.Close()
+                }}
+            }}
+            4 {{
+                # Keep splash visible until the new BitKit main window appears (seamless Discord handoff)
+                $ready = $false
+                if ($state.NewProc) {{
+                    try {{
+                        $state.NewProc.Refresh()
+                        if ($state.NewProc.HasExited -or $state.NewProc.MainWindowHandle -ne [IntPtr]::Zero) {{
+                            $ready = $true
+                        }}
+                    }} catch {{ $ready = $true }}
+                }} else {{
+                    $ready = $true
+                }}
+                if ($ready -or $state.Ticks -ge 50) {{
+                    $timer.Stop()
+                    $win.Close()
+                }}
+            }}
+        }}
+    }})
+    $timer.Start()
+    $splashShown = $true
+    $null = $win.ShowDialog()
+}} catch {{
+    $splashShown = $false
+}} finally {{
+    if (-not $splashShown) {{
+        # Headless fallback if WPF is unavailable on this Windows build
+        for ($i = 0; $i -lt 80; $i++) {{
+            if (-not (Get-Process -Id $oldPid -ErrorAction SilentlyContinue)) {{ break }}
+            if ($i -eq 55) {{ Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue }}
+            Start-Sleep -Milliseconds 120
+        }}
+        Stop-BitKitBinProcesses
+        Start-Sleep -Milliseconds 250
+        if ($installer -and (Test-Path $installer)) {{
+            Start-Process -FilePath $installer -ArgumentList '/S' -Wait
+            Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue
+        }}
+        Release-UpdateLock
+        Start-Sleep -Milliseconds 250
+        $exe = Resolve-TargetExe
+        if ($exe) {{ Start-Process -FilePath $exe }}
+    }} else {{
+        Release-UpdateLock
+    }}
+
+    if ($iconPath -and (Test-Path $iconPath)) {{
+        Remove-Item -Path $iconPath -Force -ErrorAction SilentlyContinue
+    }}
+    if ($scriptSelf -and (Test-Path $scriptSelf)) {{
+        Remove-Item -Path $scriptSelf -Force -ErrorAction SilentlyContinue
+    }}
+}}
+"##,
         pid = current_pid,
         installer = escape_ps(&inst),
         current_exe = escape_ps(&current_exe),
         local_exe = escape_ps(&local_installed_exe),
+        user_bin_dir = escape_ps(&user_bin_dir),
+        icon_path = escape_ps(&icon_path.to_string_lossy()),
+        title_b64 = encode_base64_utf8(&title_str),
+        sub_b64 = encode_base64_utf8(&sub_str),
+        restart_b64 = encode_base64_utf8(&restart_str),
     );
 
     let helper_path = std::env::temp_dir().join("bitkit_apply_update.ps1");
@@ -474,6 +735,7 @@ if ($scriptSelf -and (Test-Path $scriptSelf)) {{
 
     match hidden_std_command("powershell")
         .args([
+            "-STA",
             "-ExecutionPolicy",
             "Bypass",
             "-NoProfile",
@@ -488,7 +750,12 @@ if ($scriptSelf -and (Test-Path $scriptSelf)) {{
         .spawn()
     {
         Ok(_) => {
-            app.exit(0);
+            // Brief handoff delay so the Topmost WPF splash appears before BitKit closes underneath
+            let app_exit = app.clone();
+            std::thread::spawn(move || {
+                std::thread::sleep(Duration::from_millis(500));
+                app_exit.exit(0);
+            });
             json!({ "success": true })
         }
         Err(e) => {
@@ -645,43 +912,87 @@ pub async fn updater_update_ffmpeg() -> Value {
             }
         }
 
-        // Extract ffmpeg.exe, ffprobe.exe, and shared *.dll libraries cleanly in a blocking thread
+        // Extract ffmpeg.exe, ffprobe.exe, and shared *.dll libraries atomically via staging dir
         let zip_clone = temp_zip.clone();
         let bin_clone = user_bin.clone();
         tokio::task::spawn_blocking(move || -> Result<(), String> {
-            let file = File::open(&zip_clone).map_err(|e| e.to_string())?;
-            let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
-
-            // Remove stale old FFmpeg DLLs first
-            if let Ok(existing) = fs::read_dir(&bin_clone) {
-                for e in existing.flatten() {
-                    if e.file_name()
-                        .to_string_lossy()
-                        .to_lowercase()
-                        .ends_with(".dll")
-                    {
-                        let _ = fs::remove_file(e.path());
-                    }
-                }
+            let _sync_lock = acquire_bin_sync_lock();
+            let staging_dir = bin_clone.join(".ffmpeg_staging");
+            if staging_dir.exists() {
+                let _ = fs::remove_dir_all(&staging_dir);
             }
+            fs::create_dir_all(&staging_dir).map_err(|e| e.to_string())?;
 
-            for i in 0..archive.len() {
-                let mut entry = archive.by_index(i).map_err(|e| e.to_string())?;
-                if entry.is_dir() {
-                    continue;
-                }
-                let name = entry.name().replace('\\', "/");
-                if let Some(bin_rel) = name.split("/bin/").nth(1) {
-                    if !bin_rel.contains('/') {
-                        let lower = bin_rel.to_lowercase();
-                        if lower == "ffmpeg.exe" || lower == "ffprobe.exe" || lower.ends_with(".dll") {
-                            let mut out = File::create(bin_clone.join(bin_rel)).map_err(|e| e.to_string())?;
-                            std::io::copy(&mut entry, &mut out).map_err(|e| e.to_string())?;
+            let result = (|| -> Result<(), String> {
+                let file = File::open(&zip_clone).map_err(|e| e.to_string())?;
+                let mut archive = zip::ZipArchive::new(file).map_err(|e| e.to_string())?;
+                let mut staged_files: Vec<String> = Vec::new();
+                let mut new_dlls: HashSet<String> = HashSet::new();
+
+                for i in 0..archive.len() {
+                    let mut entry = archive.by_index(i).map_err(|e| e.to_string())?;
+                    if entry.is_dir() {
+                        continue;
+                    }
+                    let name = entry.name().replace('\\', "/");
+                    if let Some(bin_rel) = name.split("/bin/").nth(1) {
+                        if !bin_rel.contains('/') {
+                            let lower = bin_rel.to_lowercase();
+                            if lower == "ffmpeg.exe"
+                                || lower == "ffprobe.exe"
+                                || lower.ends_with(".dll")
+                            {
+                                let staged_path = staging_dir.join(bin_rel);
+                                {
+                                    let mut out =
+                                        File::create(&staged_path).map_err(|e| e.to_string())?;
+                                    std::io::copy(&mut entry, &mut out)
+                                        .map_err(|e| e.to_string())?;
+                                }
+                                if !is_valid_pe_file(&staged_path, MIN_VALID_PE_SIZE) {
+                                    return Err(format!(
+                                        "Extracted binary failed PE integrity check: {}",
+                                        bin_rel
+                                    ));
+                                }
+                                if lower.ends_with(".dll") {
+                                    new_dlls.insert(lower);
+                                }
+                                staged_files.push(bin_rel.to_string());
+                            }
                         }
                     }
                 }
-            }
-            Ok(())
+
+                if !staged_files.iter().any(|f| f.eq_ignore_ascii_case("ffmpeg.exe")) {
+                    return Err("FFmpeg archive missing ffmpeg.exe".to_string());
+                }
+
+                // Atomically move validated binaries into %APPDATA%\BitKit\bin
+                for rel in &staged_files {
+                    let src = staging_dir.join(rel);
+                    let dest = bin_clone.join(rel);
+                    atomic_replace_file(&src, &dest).map_err(|e| e.to_string())?;
+                }
+
+                // Only after all new binaries are cleanly in place, remove stale old DLLs
+                if !new_dlls.is_empty() {
+                    if let Ok(existing) = fs::read_dir(&bin_clone) {
+                        for e in existing.flatten() {
+                            let lower = e.file_name().to_string_lossy().to_lowercase();
+                            if lower.ends_with(".dll") && !new_dlls.contains(&lower) {
+                                let _ = fs::remove_file(e.path());
+                            }
+                        }
+                    }
+                }
+
+                let _ = fs::write(bin_clone.join("ffmpeg_custom.flag"), "1");
+                Ok(())
+            })();
+
+            let _ = fs::remove_dir_all(&staging_dir);
+            result
         })
         .await
         .map_err(|e| e.to_string())??;
@@ -699,7 +1010,7 @@ pub async fn updater_update_ffmpeg() -> Value {
 
 #[cfg(test)]
 mod tests {
-    use super::is_newer_version;
+    use super::{encode_base64_utf8, is_newer_version};
 
     #[test]
     fn semver_comparison_works() {
@@ -707,5 +1018,18 @@ mod tests {
         assert!(is_newer_version("v2.0.0", "v1.9.9"));
         assert!(!is_newer_version("v1.2.1", "v1.2.1"));
         assert!(!is_newer_version("v1.2.0", "v1.2.1"));
+    }
+
+    #[test]
+    fn base64_utf8_encodes_turkish_cleanly() {
+        assert_eq!(encode_base64_utf8("BitKit"), "Qml0S2l0");
+        assert_eq!(
+            encode_base64_utf8("BitKit v2.0.2 Kuruluyor"),
+            "Qml0S2l0IHYyLjAuMiBLdXJ1bHV5b3I="
+        );
+        assert_eq!(
+            encode_base64_utf8("Lütfen bekleyin, otomatik yeniden açılacak..."),
+            "TMO8dGZlbiBiZWtsZXlpbiwgb3RvbWF0aWsgeWVuaWRlbiBhw6fEsWxhY2FrLi4u"
+        );
     }
 }

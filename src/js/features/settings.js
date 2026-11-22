@@ -75,41 +75,13 @@ function initSettings() {
       const appCheck = await window.bitkit.updater.checkApp();
 
       if (appCheck && appCheck.updateAvailable) {
-        document.getElementById('settingsAppVersion').textContent = t('settings.newVersion', {current: appCheck.current, latest: appCheck.latest});
-        document.getElementById('settingsAppVersion').style.color = 'var(--warning)';
-
-        const container = document.getElementById('toastContainer');
-        if (container) {
-          const toast = document.createElement('div');
-          toast.className = 'toast toast-info';
-          toast.style.display = 'flex';
-          toast.style.flexDirection = 'column';
-          toast.style.gap = '10px';
-
-          toast.innerHTML = `
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="toast-icon" style="color:var(--accent-teal); font-weight:bold;">ℹ</span>
-              <span class="toast-message" style="margin:0;">${t('toast.appUpdateFound', {latest: appCheck.latest})}</span>
-            </div>
-            <div style="display:flex; gap:8px; justify-content:flex-end;">
-              <button class="btn btn-ghost" style="padding:4px 12px; font-size:0.85rem; color:var(--error);" id="btnSettingsUpdateCancel">${t('toast.cancelShutdown')}</button>
-              <button class="btn" style="padding:4px 12px; font-size:0.85rem; background:var(--success); color:white; border:none;" id="btnSettingsUpdateConfirm">${t('settings.update')}</button>
-            </div>
-          `;
-
-          container.appendChild(toast);
-
-          toast.querySelector('#btnSettingsUpdateCancel').onclick = () => {
-            toast.classList.add('toast-exit');
-            setTimeout(() => toast.remove(), 300);
-          };
-
-          toast.querySelector('#btnSettingsUpdateConfirm').onclick = async () => {
-            toast.classList.add('toast-exit');
-            setTimeout(() => toast.remove(), 300);
-            showToast(t('settings.downloadingBitKit', {latest: appCheck.latest}), 'info', 15000);
-            await window.bitkit.updater.downloadApp();
-          };
+        const verEl = document.getElementById('settingsAppVersion');
+        if (verEl) {
+          verEl.textContent = t('settings.newVersion', {current: appCheck.current, latest: appCheck.latest});
+          verEl.style.color = 'var(--warning)';
+        }
+        if (window.BitKitUpdater) {
+          window.BitKitUpdater.showUpdateAvailableToast(appCheck);
         }
       } else if (appCheck && appCheck.error) {
         showToast(t('toast.updateError', {error: appCheck.error}), 'warning', 5000);
@@ -130,8 +102,10 @@ function initSettings() {
          await window.bitkit.updater.updateFfmpeg();
       }
 
-      textLabel.textContent = t('settings.systemUpToDate');
-      showToast(t('toast.systemReady'), 'success');
+      if (!appCheck?.updateAvailable) {
+        textLabel.textContent = t('settings.systemUpToDate');
+        showToast(t('toast.systemReady'), 'success');
+      }
 
       await checkToolVersions();
     } catch (e) {

@@ -56,6 +56,17 @@ pub fn cleanup_all(app: &tauri::AppHandle) {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Prevent launching while the silent updater splash is actively installing a new version
+    if paths::is_update_in_progress() {
+        return;
+    }
+
+    // Single-instance guard: focuses existing BitKit window & prevents concurrent bin sync races
+    let _single_instance = match paths::acquire_single_instance() {
+        Some(guard) => guard,
+        None => return,
+    };
+
     let app_state = AppState::new();
 
     tauri::Builder::default()
