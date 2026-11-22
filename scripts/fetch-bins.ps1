@@ -1,4 +1,6 @@
 ﻿$ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $binFolder = Join-Path $PSScriptRoot "..\resources\bin"
@@ -55,7 +57,7 @@ else {
 
     Invoke-WebRequest -Uri $denoUrl -OutFile $tempZip -UseBasicParsing
     Write-Host "Extracting Deno zip archive..." -ForegroundColor Yellow
-    Expand-Archive -Path $tempZip -DestinationPath $tempExt -Force
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($tempZip, $tempExt)
 
     $denoSrc = Join-Path $tempExt "deno.exe"
     Copy-Item -Path $denoSrc -Destination $denoDest -Force
@@ -88,7 +90,7 @@ else {
 
     Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $tempZip -UseBasicParsing
     Write-Host "Extracting FFmpeg shared zip archive..." -ForegroundColor Yellow
-    Expand-Archive -Path $tempZip -DestinationPath $tempExt -Force
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($tempZip, $tempExt)
 
     # Clean stale FFmpeg DLLs before copying new ones
     Get-ChildItem -Path $binFolder -Filter "*.dll" -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
