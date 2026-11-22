@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Rust-Native-DEA584?logo=rust&logoColor=black" alt="Rust">
   <img src="https://img.shields.io/badge/Tauri-v2-24C8DB?logo=tauri&logoColor=white" alt="Tauri v2">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License">
-  <img src="https://img.shields.io/badge/Version-2.0.2-2A9D8F" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.0.3-2A9D8F" alt="Version">
 </p>
 
 <p align="center">

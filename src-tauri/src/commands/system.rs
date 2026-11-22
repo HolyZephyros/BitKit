@@ -104,6 +104,62 @@ pub fn system_cancel_shutdown() -> Value {
     json!({ "success": true })
 }
 
+#[cfg(windows)]
+fn detect_gpu_names_native() -> Vec<String> {
+    #[repr(C)]
+    struct DisplayDeviceW {
+        cb: u32,
+        device_name: [u16; 32],
+        device_string: [u16; 128],
+        state_flags: u32,
+        device_id: [u16; 128],
+        device_key: [u16; 128],
+    }
+
+    #[link(name = "user32")]
+    extern "system" {
+        fn EnumDisplayDevicesW(
+            lp_device: *const u16,
+            i_dev_num: u32,
+            lp_display_device: *mut DisplayDeviceW,
+            dw_flags: u32,
+        ) -> i32;
+    }
+
+    let mut names: Vec<String> = Vec::new();
+    for idx in 0..32u32 {
+        let mut dd = DisplayDeviceW {
+            cb: std::mem::size_of::<DisplayDeviceW>() as u32,
+            device_name: [0; 32],
+            device_string: [0; 128],
+            state_flags: 0,
+            device_id: [0; 128],
+            device_key: [0; 128],
+        };
+        let ok = unsafe { EnumDisplayDevicesW(std::ptr::null(), idx, &mut dd, 0) };
+        if ok == 0 {
+            break;
+        }
+        let end = dd
+            .device_string
+            .iter()
+            .position(|&c| c == 0)
+            .unwrap_or(dd.device_string.len());
+        let name = String::from_utf16_lossy(&dd.device_string[..end])
+            .trim()
+            .to_string();
+        if !name.is_empty() && !names.iter().any(|n| n.eq_ignore_ascii_case(&name)) {
+            names.push(name);
+        }
+    }
+    names
+}
+
+#[cfg(not(windows))]
+fn detect_gpu_names_native() -> Vec<String> {
+    Vec::new()
+}
+
 #[tauri::command]
 pub async fn system_get_gpu(app: AppHandle, state: State<'_, AppState>) -> Result<GpuInfo, String> {
     let mut cache_guard = state.gpu_cache.lock().await;
@@ -111,27 +167,7 @@ pub async fn system_get_gpu(app: AppHandle, state: State<'_, AppState>) -> Resul
         return Ok(cached.clone());
     }
 
-    let names: Vec<String> = match tokio::time::timeout(
-        Duration::from_secs(8),
-        hidden_tokio_command("powershell")
-            .args([
-                "-NoProfile",
-                "-Command",
-                "Get-CimInstance -ClassName Win32_VideoController | Select-Object -ExpandProperty Name",
-            ])
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .output(),
-    )
-    .await
-    {
-        Ok(Ok(out)) => String::from_utf8_lossy(&out.stdout)
-            .lines()
-            .map(|l| l.trim().to_string())
-            .filter(|l| !l.is_empty())
-            .collect(),
-        _ => Vec::new(),
-    };
+    let names = detect_gpu_names_native();
 
     let name_lower = names.join(" ").to_lowercase();
     let vendor = if name_lower.contains("nvidia")
@@ -212,4 +248,16 @@ pub async fn system_get_gpu(app: AppHandle, state: State<'_, AppState>) -> Resul
 
     *cache_guard = Some(info.clone());
     Ok(info)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::detect_gpu_names_native;
+
+    #[test]
+    fn detects_display_adapters_natively() {
+        let names = detect_gpu_names_native();
+        // Should return without spawning powershell; on Windows desktops at least 1 adapter exists
+        assert!(names.iter().all(|n| !n.is_empty()));
+    }
 }

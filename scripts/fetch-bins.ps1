@@ -18,8 +18,13 @@ if (Test-Path $versionFile) {
     }
 }
 
+$ghHeaders = @{ "User-Agent" = "BitKit" }
+if ($env:GITHUB_TOKEN) {
+    $ghHeaders["Authorization"] = "Bearer $($env:GITHUB_TOKEN)"
+}
+
 Write-Host "Checking yt-dlp version..." -ForegroundColor Cyan
-$ytdlpApi = Invoke-RestMethod -Uri "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest" -Headers @{"User-Agent"="BitKit"}
+$ytdlpApi = Invoke-RestMethod -Uri "https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest" -Headers $ghHeaders
 $ytdlpVersion = $ytdlpApi.tag_name
 $ytdlpDest = Join-Path $binFolder "yt-dlp.exe"
 
@@ -70,7 +75,7 @@ if ((Test-Path $ffmpegDest) -and (Test-Path $ffprobeDest) -and $hasSharedDlls -a
     Write-Host "FFmpeg shared build is already installed. Skipping download." -ForegroundColor Green
 }
 else {
-    $api = Invoke-RestMethod -Uri "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/latest" -Headers @{"User-Agent"="BitKit"}
+    $api = Invoke-RestMethod -Uri "https://api.github.com/repos/BtbN/FFmpeg-Builds/releases/latest" -Headers $ghHeaders
     $ffmpegVersion = $api.published_at
     Write-Host "Downloading FFmpeg shared build ($ffmpegVersion)..." -ForegroundColor Yellow
     $asset = $api.assets | Where-Object { $_.name -like '*win64-gpl-shared.zip' } | Select-Object -First 1

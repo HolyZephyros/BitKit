@@ -44,10 +44,8 @@ mod win_sync {
     use std::ffi::OsStr;
     use std::path::Path;
 
-    const SYNCHRONIZE: u32 = 0x0010_0000;
     const WAIT_OBJECT_0: u32 = 0x0000_0000;
     const WAIT_ABANDONED: u32 = 0x0000_0080;
-    const WAIT_TIMEOUT: u32 = 0x0000_0102;
     const ERROR_ALREADY_EXISTS: u32 = 183;
     const MOVEFILE_REPLACE_EXISTING: u32 = 0x1;
     const MOVEFILE_WRITE_THROUGH: u32 = 0x8;
@@ -58,11 +56,6 @@ mod win_sync {
         fn CreateMutexW(
             lp_mutex_attributes: *const std::ffi::c_void,
             b_initial_owner: i32,
-            lp_name: *const u16,
-        ) -> *mut std::ffi::c_void;
-        fn OpenMutexW(
-            dw_desired_access: u32,
-            b_inherit_handle: i32,
             lp_name: *const u16,
         ) -> *mut std::ffi::c_void;
         fn WaitForSingleObject(h_handle: *mut std::ffi::c_void, dw_milliseconds: u32) -> u32;
@@ -114,25 +107,6 @@ mod win_sync {
             if !hwnd.is_null() {
                 let _ = ShowWindow(hwnd, SW_RESTORE);
                 let _ = SetForegroundWindow(hwnd);
-            }
-        }
-    }
-
-    pub fn is_mutex_held(name: &str) -> bool {
-        let wide = to_wide_null(OsStr::new(name));
-        unsafe {
-            let handle = OpenMutexW(SYNCHRONIZE, 0, wide.as_ptr());
-            if handle.is_null() {
-                return false;
-            }
-            let wait = WaitForSingleObject(handle, 0);
-            if wait == WAIT_OBJECT_0 || wait == WAIT_ABANDONED {
-                let _ = ReleaseMutex(handle);
-                let _ = CloseHandle(handle);
-                false
-            } else {
-                let _ = CloseHandle(handle);
-                wait == WAIT_TIMEOUT
             }
         }
     }
@@ -198,18 +172,6 @@ pub use win_sync::NamedMutex;
 
 #[cfg(not(windows))]
 pub struct NamedMutex;
-
-/// Returns true if the external BitKit updater splash/installer is actively installing an update.
-pub fn is_update_in_progress() -> bool {
-    #[cfg(windows)]
-    {
-        if win_sync::is_mutex_held("Local\\BitKit_UpdateInProgress_Mutex") {
-            win_sync::focus_window_by_title("BitKit Updater");
-            return true;
-        }
-    }
-    false
-}
 
 /// Ensures only one BitKit instance runs at a time; focuses the existing window if already open.
 pub fn acquire_single_instance() -> Option<NamedMutex> {
@@ -640,6 +602,7 @@ fn decode_win_acp(bytes: &[u8]) -> Option<String> {
     if bytes.is_empty() {
         return Some(String::new());
     }
+    #[link(name = "kernel32")]
     extern "system" {
         fn MultiByteToWideChar(
             code_page: u32,

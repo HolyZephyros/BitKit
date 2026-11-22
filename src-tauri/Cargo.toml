@@ -1,6 +1,6 @@
 [package]
 name = "bitkit"
-version = "2.0.2"
+version = "2.0.3"
 description = "BitKit — All-in-one media toolkit powered by yt-dlp & ffmpeg"
 authors = ["BitKit"]
 license = "MIT"

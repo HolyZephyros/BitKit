@@ -176,7 +176,7 @@ dependencies = [
 
 [[package]]
 name = "bitkit"
-version = "2.0.2"
+version = "2.0.3"
 dependencies = [
  "arboard",
  "chrono",

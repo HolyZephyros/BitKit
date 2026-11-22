@@ -1,0 +1,92 @@
+name: Release Windows (MSVC)
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v2.0.3). Defaults to package.json version.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust (Official Windows MSVC)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch media binaries (yt-dlp, Deno, shared FFmpeg)
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run fetch-bins
+
+      - name: Build BitKit release + NSIS installer (MSVC)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build
+
+      - name: Prepare BitKit-Setup installer & latest.yml
+        shell: pwsh
+        run: node scripts/release.js --dry-run
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $pkg = Get-Content package.json -Raw | ConvertFrom-Json
+          $ver = $pkg.version
+          $tag = "${{ github.event.inputs.tag }}"
+          if (-not $tag) {
+            if ("${{ github.ref_type }}" -eq "tag") {
+              $tag = "${{ github.ref_name }}"
+            } else {
+              $tag = "v$ver"
+            }
+          }
+
+          $nsisDir = "src-tauri\target\release\bundle\nsis"
+          $setup = Join-Path $nsisDir "BitKit-Setup-$ver.exe"
+          $yml = Join-Path $nsisDir "latest.yml"
+
+          if (-not (Test-Path $setup)) { throw "Installer not found: $setup" }
+          if (-not (Test-Path $yml)) { throw "latest.yml not found: $yml" }
+
+          $exists = $false
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) { $exists = $true }
+
+          if ($exists) {
+            gh release upload $tag $setup $yml --clobber
+          } else {
+            gh release create $tag $setup $yml `
+              --title "BitKit $tag" `
+              --generate-notes
+          }
