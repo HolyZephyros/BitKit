@@ -1,5 +1,5 @@
 use crate::logging::write_log;
-use crate::paths::{downloads_dir, get_bin_path, hidden_tokio_command, kill_process_tree};
+use crate::paths::{decode_process_bytes, downloads_dir, get_bin_path, hidden_tokio_command, kill_process_tree};
 use crate::state::{ActiveDownload, AppState};
 use regex::Regex;
 use serde_json::{json, Value};
@@ -207,7 +207,7 @@ pub async fn download_analyze(
 
     if !output.status.success() {
         let code = output.status.code().unwrap_or(-1);
-        let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+        let stderr = decode_process_bytes(&output.stderr);
         let mut clean_error = stderr.clone();
         if let Some(idx) = stderr.find("ERROR:") {
             let after = &stderr[idx + 6..];
@@ -224,7 +224,7 @@ pub async fn download_analyze(
         });
     }
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stdout = decode_process_bytes(&output.stdout);
     let mut entries: Vec<Value> = Vec::new();
     for line in stdout.lines() {
         let trimmed = line.trim();
@@ -717,11 +717,19 @@ pub async fn download_start(
         let stdout_task = tokio::spawn(async move {
             let Some(s) = stdout else { return };
             let thumb_re = Regex::new(r"to:\s*(.+)$").unwrap();
-            let mut reader = BufReader::new(s).lines();
+            let mut reader = BufReader::new(s);
+            let mut raw_line = Vec::with_capacity(512);
             let mut current_fragment: usize = 0;
             let mut fragment_weights: [(f64, f64); 2] = [(0.0, 90.0), (45.0, 90.0)];
 
-            while let Ok(Some(line)) = reader.next_line().await {
+            loop {
+                raw_line.clear();
+                match reader.read_until(b'\n', &mut raw_line).await {
+                    Ok(0) | Err(_) => break,
+                    Ok(_) => {}
+                }
+                let decoded = decode_process_bytes(&raw_line);
+                let line = decoded.trim_end_matches(['\r', '\n']);
                 if line.contains("max-filesize") && line.contains("Aborting") {
                     max_fs_stdout.store(true, Ordering::Relaxed);
                 }
@@ -736,6 +744,10 @@ pub async fn download_start(
                     if let Some(file_part) = merged.split('"').next() {
                         add_known_file(&kf_stdout, file_part.to_string());
                     }
+                } else if let Some(dest) = line.split("[ExtractAudio] Destination: ").nth(1) {
+                    add_known_file(&kf_stdout, dest.trim().to_string());
+                } else if let Some(dest) = line.split("[VideoConvertor] Destination: ").nth(1) {
+                    add_known_file(&kf_stdout, dest.trim().to_string());
                 } else if line.contains("[info] Writing video thumbnail") {
                     if let Some(caps) = thumb_re.captures(&line) {
                         add_known_file(&kf_stdout, caps[1].trim().to_string());
@@ -811,7 +823,7 @@ pub async fn download_start(
                 match s.read(&mut buf).await {
                     Ok(0) | Err(_) => break,
                     Ok(n) => {
-                        let chunk = String::from_utf8_lossy(&buf[..n]);
+                        let chunk = decode_process_bytes(&buf[..n]);
                         {
                             let mut eb = err_buf_stderr.lock().unwrap();
                             eb.push_str(&chunk);
@@ -885,9 +897,12 @@ pub async fn download_start(
         }
 
         let err_buf = error_buffer.lock().unwrap().clone();
+        let succeeded = matches!(&wait_res, Ok(s) if s.success());
         let mut last_error_msg = String::new();
         if !err_buf.is_empty() {
-            write_log("error", &format!("[yt-dlp stderr for {}]:\n{}", url_bg, err_buf));
+            if !succeeded || err_buf.contains("ERROR:") || err_buf.contains("WARNING:") {
+                write_log("error", &format!("[yt-dlp stderr for {}]:\n{}", url_bg, err_buf));
+            }
             if let Some(idx) = err_buf.find("ERROR:") {
                 let first = err_buf[idx + 6..].lines().next().unwrap_or("").trim();
                 if !first.is_empty() {

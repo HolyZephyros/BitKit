@@ -26,10 +26,28 @@ async function initI18n(lang = 'tr') {
   applyTranslations();
 }
 
+function resolveKey(dict, key) {
+  if (!dict || !key) return undefined;
+  if (typeof dict[key] === 'string') return dict[key];
+  if (key.includes('.')) {
+    const parts = key.split('.');
+    let cur = dict;
+    for (const part of parts) {
+      if (cur && typeof cur === 'object' && part in cur) {
+        cur = cur[part];
+      } else {
+        return undefined;
+      }
+    }
+    if (typeof cur === 'string') return cur;
+  }
+  return undefined;
+}
+
 function t(key, params = {}) {
   const lang = locales[currentLocale] || {};
   const fb = locales[fallbackLocale] || {};
-  let text = lang[key] || fb[key] || key;
+  let text = resolveKey(lang, key) || resolveKey(fb, key) || key;
   for (const [k, v] of Object.entries(params)) {
     text = text.replaceAll(`{{${k}}}`, v);
   }

@@ -229,3 +229,76 @@ pub fn kill_process_tree(pid: u32) {
             .spawn();
     }
 }
+
+#[cfg(windows)]
+fn decode_win_acp(bytes: &[u8]) -> Option<String> {
+    if bytes.is_empty() {
+        return Some(String::new());
+    }
+    extern "system" {
+        fn MultiByteToWideChar(
+            code_page: u32,
+            dw_flags: u32,
+            lp_multi_byte_str: *const u8,
+            cb_multi_byte: i32,
+            lp_wide_char_str: *mut u16,
+            cch_wide_char: i32,
+        ) -> i32;
+    }
+    const CP_ACP: u32 = 0;
+    let len = i32::try_from(bytes.len()).ok()?;
+    let wide_len =
+        unsafe { MultiByteToWideChar(CP_ACP, 0, bytes.as_ptr(), len, std::ptr::null_mut(), 0) };
+    if wide_len <= 0 {
+        return None;
+    }
+    let mut wide = vec![0u16; wide_len as usize];
+    let written = unsafe {
+        MultiByteToWideChar(
+            CP_ACP,
+            0,
+            bytes.as_ptr(),
+            len,
+            wide.as_mut_ptr(),
+            wide_len,
+        )
+    };
+    if written <= 0 {
+        return None;
+    }
+    wide.truncate(written as usize);
+    Some(String::from_utf16_lossy(&wide))
+}
+
+/// Decodes bytes emitted by child processes (UTF-8 first, then Windows ANSI code page CP_ACP).
+/// Prevents non-UTF8 Windows filenames/titles from breaking stdout pipes (Python Errno 22).
+pub fn decode_process_bytes(bytes: &[u8]) -> String {
+    if let Ok(s) = std::str::from_utf8(bytes) {
+        return s.to_string();
+    }
+    #[cfg(windows)]
+    {
+        if let Some(decoded) = decode_win_acp(bytes) {
+            return decoded;
+        }
+    }
+    String::from_utf8_lossy(bytes).into_owned()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::decode_process_bytes;
+
+    #[test]
+    fn decodes_utf8_and_non_utf8_bytes_without_failing() {
+        let utf8 = "Demacia İçin! Öyküsü".as_bytes();
+        assert_eq!(decode_process_bytes(utf8), "Demacia İçin! Öyküsü");
+
+        // Exact CP1254 bytes produced by yt-dlp on Windows for "Demacia İçin!"
+        let cp1254: &[u8] = &[0x44, 0x65, 0x6d, 0x61, 0x63, 0x69, 0x61, 0x20, 0xdd, 0xe7, 0x69, 0x6e, 0x21];
+        let decoded = decode_process_bytes(cp1254);
+        assert!(decoded.starts_with("Demacia "));
+        assert!(decoded.ends_with("in!"));
+        assert!(!decoded.is_empty());
+    }
+}

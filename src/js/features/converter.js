@@ -1448,7 +1448,8 @@ if (window.bitkit?.convert?.onError) {
     if (!data || !data.id) return;
     if (activeConversions.has(data.id)) {
       const existing = activeConversions.get(data.id);
-      activeConversions.set(data.id, { ...existing, ...data, status: 'error', errorMsg: data.message || data.errorKey });
+      const resolvedErr = data.message || (data.errorKey ? t(data.errorKey, data.errorParams || {}) : '');
+      activeConversions.set(data.id, { ...existing, ...data, status: 'error', errorMsg: resolvedErr });
       updateConvertQueueUI();
 
       setTimeout(() => {

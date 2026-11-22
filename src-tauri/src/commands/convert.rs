@@ -1,5 +1,5 @@
 use crate::commands::command_builder::{build_ffmpeg_args, get_source_info};
-use crate::paths::{get_bin_path, hidden_tokio_command, kill_process_tree};
+use crate::paths::{decode_process_bytes, get_bin_path, hidden_tokio_command, kill_process_tree};
 use crate::state::{ActiveConversion, AppState, ConversionJob};
 use regex::Regex;
 use serde_json::{json, Value};
@@ -269,11 +269,14 @@ async fn run_ffmpeg_pass(
             match s.read(&mut buf).await {
                 Ok(0) | Err(_) => break,
                 Ok(n) => {
-                    let chunk = String::from_utf8_lossy(&buf[..n]);
+                    let chunk = decode_process_bytes(&buf[..n]);
                     let mut last_err = err_for_stderr.lock().unwrap();
                     last_err.push_str(&chunk);
                     if last_err.len() > 3000 {
-                        let keep_from = last_err.len() - 2000;
+                        let mut keep_from = last_err.len() - 2000;
+                        while !last_err.is_char_boundary(keep_from) && keep_from < last_err.len() {
+                            keep_from += 1;
+                        }
                         let sliced = &last_err[keep_from..];
                         if let Some(nl) = sliced.find('\n') {
                             *last_err = sliced[nl + 1..].to_string();
@@ -303,8 +306,16 @@ async fn run_ffmpeg_pass(
     let id_for_stdout = id.to_string();
     let stdout_task = tokio::spawn(async move {
         let Some(s) = stdout else { return };
-        let mut reader = BufReader::new(s).lines();
-        while let Ok(Some(line)) = reader.next_line().await {
+        let mut reader = BufReader::new(s);
+        let mut raw_line = Vec::with_capacity(256);
+        loop {
+            raw_line.clear();
+            match reader.read_until(b'\n', &mut raw_line).await {
+                Ok(0) | Err(_) => break,
+                Ok(_) => {}
+            }
+            let decoded = decode_process_bytes(&raw_line);
+            let line = decoded.trim_end_matches(['\r', '\n']);
             if let Some(dur_str) = line.strip_prefix("duration=") {
                 let mut dur = dur_for_stdout.lock().unwrap();
                 if *dur <= 0.0 {
